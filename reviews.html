@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HM Peptide – Customer Reviews</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+  :root {
+    --teal:       #00b4a6;
+    --teal-dark:  #008f84;
+    --teal-light: #e0f7f5;
+    --navy:       #1a2b3c;
+    --gray-100:   #f5f7f9;
+    --gray-200:   #e8ecef;
+    --gray-400:   #9aa5b1;
+    --gray-700:   #4a5568;
+    --white:      #ffffff;
+    --star:       #f5a623;
+    --font-head:  'Outfit', sans-serif;
+    --font-body:  'DM Sans', sans-serif;
+    --shadow-sm:  0 2px 8px rgba(0,0,0,0.07);
+    --shadow-md:  0 6px 24px rgba(0,0,0,0.10);
+    --shadow-lg:  0 12px 40px rgba(0,0,0,0.14);
+    --radius:     14px;
+    --transition: 0.22s cubic-bezier(.4,0,.2,1);
+    --dark: #111;
+    --text: #333;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font-body); background: var(--gray-100); color: var(--navy); min-height: 100vh; }
+  a { text-decoration: none; color: inherit; }
+
+  /* TOPBAR */
+  .topbar { background: var(--navy); color: rgba(255,255,255,0.85); text-align: center; font-size: 12.5px; letter-spacing: 0.03em; padding: 8px 20px; font-family: var(--font-head); }
+  .topbar span { color: var(--teal); font-weight: 600; }
+
+  /* HEADER */
+  header { background: var(--white); box-shadow: var(--shadow-sm); position: sticky; top: 0; z-index: 100; }
+  .header-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 0 32px; height: 72px; position: relative; }
+  .logo { display: flex; align-items: center; gap: 10px; font-family: var(--font-head); font-weight: 700; font-size: 22px; color: var(--navy); cursor: pointer; z-index: 101; }
+  .logo-icon { width: 40px; height: 40px; background: var(--teal); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: 800; }
+  .logo-text em { color: var(--teal); font-style: normal; }
+  
+  nav { display: flex; align-items: center; gap: 4px; }
+  nav a { font-family: var(--font-head); font-size: 14px; font-weight: 500; color: var(--gray-700); padding: 8px 16px; border-radius: 8px; transition: color var(--transition), background var(--transition); text-decoration: none; }
+  nav a:hover { color: var(--teal); background: var(--teal-light); }
+  nav a.active { color: var(--teal); background: var(--teal-light); position: relative; }
+  nav a.active::after { content: ''; position: absolute; left: 50%; transform: translateX(-50%); bottom: 0; width: 24px; height: 2.5px; background: var(--teal); border-radius: 2px; }
+  .nav-contact { background: var(--teal) !important; color: white !important; border-radius: 8px; font-weight: 600 !important; }
+  .nav-contact:hover { background: var(--teal-dark) !important; }
+  
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; z-index: 101; background: transparent; border: none; }
+  .hamburger span { display: block; width: 25px; height: 2.5px; background: var(--navy); border-radius: 2px; transition: all 0.3s ease; }
+
+  /* Mobile Navigation */
+  @media (max-width: 820px) {
+    .header-inner { padding: 0 20px; }
+    .hamburger { display: flex; }
+    
+    nav {
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 280px;
+      height: 100vh;
+      background: var(--white);
+      padding: 80px 24px 30px;
+      box-shadow: -5px 0 30px rgba(0,0,0,0.15);
+      gap: 8px;
+      z-index: 100;
+      transition: right 0.3s ease;
+      overflow-y: auto;
+    }
+    nav.open { right: 0; }
+    nav a {
+      width: 100%;
+      text-align: left;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 16px;
+    }
+    nav a.active::after { display: none; }
+    nav a.nav-contact { margin-top: 10px; text-align: center; }
+    
+    .menu-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 99;
+    }
+    .menu-overlay.active { display: block; }
+    
+    .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(6px, -6px); }
+  }
+
+  /* HERO */
+  .page-hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #0d3b4f 60%, var(--teal-dark) 100%);
+    color: white; padding: 56px 32px 48px; text-align: center; position: relative; overflow: hidden;
+  }
+  .page-hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 70% 50%, rgba(0,180,166,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .page-hero h1 { font-family: var(--font-head); font-size: clamp(28px,4vw,42px); font-weight: 700; letter-spacing: -0.02em; margin-bottom: 12px; }
+  .page-hero h1 span { color: var(--teal); }
+  .page-hero p { font-size: 15px; opacity: 0.75; max-width: 540px; margin: 0 auto 24px; line-height: 1.65; }
+  .hero-stats { display: flex; gap: 32px; justify-content: center; flex-wrap: wrap; }
+  .hero-stat { text-align: center; }
+  .hero-stat .stat-num { font-family: var(--font-head); font-size: 32px; font-weight: 800; color: var(--teal); }
+  .hero-stat .stat-label { font-family: var(--font-head); font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+
+  /* MAIN CONTENT */
+  .main-wrap { max-width: 1100px; margin: 0 auto; padding: 40px 32px 0; }
+
+  /* SUMMARY BAR */
+  .summary-bar {
+    background: white; border-radius: var(--radius); border: 1.5px solid var(--gray-200);
+    padding: 28px 32px; margin-bottom: 32px; display: flex; gap: 40px; align-items: center; flex-wrap: wrap;
+    box-shadow: var(--shadow-sm);
+  }
+  .summary-score { text-align: center; min-width: 100px; }
+  .score-big { font-family: var(--font-head); font-size: 60px; font-weight: 800; color: var(--navy); line-height: 1; }
+  .score-stars { color: var(--star); font-size: 24px; letter-spacing: 2px; margin: 6px 0; }
+  .score-count { font-family: var(--font-head); font-size: 13px; color: var(--gray-400); }
+  .summary-bars { flex: 1; display: flex; flex-direction: column; gap: 8px; min-width: 200px; }
+  .bar-row { display: flex; align-items: center; gap: 12px; }
+  .bar-label { font-family: var(--font-head); font-size: 12px; font-weight: 600; color: var(--gray-700); width: 36px; text-align: right; white-space: nowrap; }
+  .bar-track { flex: 1; height: 9px; background: var(--gray-200); border-radius: 100px; overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--star); border-radius: 100px; }
+  .bar-count { font-family: var(--font-head); font-size: 11px; color: var(--gray-400); width: 24px; }
+  .summary-badges { display: flex; flex-direction: column; gap: 10px; }
+  .summary-badge { display: flex; align-items: center; gap: 8px; font-family: var(--font-head); font-size: 13px; color: var(--gray-700); font-weight: 500; }
+  .summary-badge span:first-child { font-size: 20px; }
+
+  /* FILTER ROW */
+  .filter-row { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; align-items: center; }
+  .filter-label { font-family: var(--font-head); font-size: 13px; font-weight: 600; color: var(--gray-400); letter-spacing: 0.06em; text-transform: uppercase; }
+  .filter-btn {
+    padding: 7px 18px; border-radius: 100px; border: 1.5px solid var(--gray-200);
+    background: white; font-family: var(--font-head); font-size: 13px; font-weight: 500;
+    color: var(--gray-700); cursor: pointer; transition: all var(--transition);
+  }
+  .filter-btn:hover { border-color: var(--teal); color: var(--teal); }
+  .filter-btn.active { background: var(--teal); border-color: var(--teal); color: white; }
+
+  /* REVIEWS LIST */
+  .reviews-list { display: flex; flex-direction: column; gap: 16px; margin-bottom: 48px; }
+  .review-card {
+    background: white; border: 1.5px solid var(--gray-200); border-radius: var(--radius);
+    padding: 22px 26px; box-shadow: var(--shadow-sm); transition: box-shadow var(--transition);
+  }
+  .review-card:hover { box-shadow: var(--shadow-md); }
+  .review-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+  .reviewer-left { display: flex; flex-direction: column; gap: 4px; }
+  .reviewer-name { font-family: var(--font-head); font-size: 15px; font-weight: 700; color: var(--navy); }
+  .review-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .review-date { font-family: var(--font-head); font-size: 12px; color: var(--gray-400); }
+  .review-product-tag {
+    font-family: var(--font-head); font-size: 11px; font-weight: 600; color: var(--teal-dark);
+    background: var(--teal-light); padding: 2px 10px; border-radius: 100px;
+  }
+  .review-stars { color: var(--star); font-size: 18px; letter-spacing: 1px; }
+  .review-text { font-size: 14px; line-height: 1.75; color: var(--gray-700); }
+
+  .no-reviews-msg { text-align: center; padding: 60px 20px; color: var(--gray-400); font-family: var(--font-head); font-size: 16px; }
+  .no-reviews-msg span { display: block; font-size: 48px; margin-bottom: 16px; opacity: 0.4; }
+
+  /* ADMIN BUTTON */
+  .admin-toggle-wrap { text-align: center; margin: 20px 0 40px; }
+  .admin-toggle-btn {
+    background: var(--navy); color: white; border: none; border-radius: 10px;
+    padding: 12px 28px; font-family: var(--font-head); font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: background var(--transition); display: inline-block;
+    text-decoration: none;
+  }
+  .admin-toggle-btn:hover { background: var(--teal); }
+
+  /* PAYMENT METHODS SECTION */
+  .payment-section {
+    max-width: 1280px;
+    margin: 60px auto 60px;
+    padding: 30px 32px;
+    background: var(--white);
+    border-radius: 20px;
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+  }
+  .payment-section h4 {
+    font-family: var(--font-head);
+    font-size: 1.1rem;
+    color: var(--navy);
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+  }
+  .payment-icons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 35px;
+    align-items: center;
+  }
+  .payment-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .payment-icon i {
+    font-size: 48px;
+    color: var(--navy);
+    transition: transform 0.2s;
+  }
+  .payment-icon span {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-700);
+    letter-spacing: 0.5px;
+  }
+  .payment-icon:hover i {
+    transform: translateY(-3px);
+    color: var(--teal);
+  }
+  .fa-bitcoin { color: #F7931A; }
+  .fa-university { color: #2c6e9e; }
+  .fa-paypal { color: #003087; }
+  .fa-square { color: #00c4b4; }
+  .fa-building-columns { color: #4a5568; }
+
+  /* FLOATING SIDE */
+  .side-contact { position: fixed; right: 0; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; z-index: 200; gap: 2px; }
+  .side-btn { width: 48px; height: 48px; background: var(--white); border: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; transition: background var(--transition); color: var(--gray-700); text-decoration: none; }
+  .side-btn:hover { background: var(--teal); color: white; transform: translateX(-4px); }
+  .side-btn:first-child { border-radius: 10px 0 0 0; }
+  .back-to-top { width: 48px; height: 48px; background: var(--navy); display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 18px; transition: background var(--transition); border-radius: 0 0 0 10px; }
+  .back-to-top:hover { background: var(--teal); transform: translateX(-4px); }
+
+  /* Tooltip for side buttons */
+  .side-btn { position: relative; }
+  .side-btn::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    right: 60px;
+    background: var(--navy);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: var(--font-body);
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+  .side-btn:hover::before {
+    opacity: 1;
+    visibility: visible;
+    right: 55px;
+  }
+
+  @media (max-width: 1024px) {
+    .side-contact { right: 8px; }
+    .side-btn, .back-to-top { width: 42px; height: 42px; font-size: 18px; }
+  }
+  @media (max-width: 768px) {
+    .side-contact { right: 5px; }
+    .side-btn, .back-to-top { width: 38px; height: 38px; font-size: 16px; }
+  }
+  @media (max-width: 480px) {
+    .side-contact { right: 5px; }
+    .side-btn, .back-to-top { width: 35px; height: 35px; font-size: 14px; }
+  }
+
+  /* CTA SECTION STYLES */
+  .cta-section {
+    background: var(--white);
+    text-align: center;
+    padding: 60px 20px 80px;
+    border-top: 1px solid #eee;
+    margin-top: 0;
+  }
+  .cta-section h2 {
+    font-family: var(--font-head);
+    font-size: clamp(1.2rem, 5vw, 1.9rem);
+    font-weight: 700;
+    color: var(--navy);
+    max-width: 500px;
+    margin: 0 auto 10px;
+    line-height: 1.3;
+    padding: 0 10px;
+  }
+  .cta-section p {
+    color: #888;
+    font-size: clamp(0.8rem, 3vw, 0.9rem);
+    margin-bottom: 30px;
+    padding: 0 15px;
+  }
+  .email-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 480px;
+    width: 90%;
+    margin: 0 auto;
+    border: 1px solid #aaa;
+    border-radius: 48px;
+    overflow: hidden;
+    background: white;
+  }
+  .email-row input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 0.9rem;
+    padding: 14px 20px;
+    font-family: var(--font-body);
+    color: var(--gray-700);
+    background: transparent;
+    min-width: 0;
+  }
+  .email-row input::placeholder {
+    color: #aaa;
+    font-size: 0.85rem;
+  }
+  .arrow-btn {
+    background: var(--teal);
+    border: none;
+    font-size: 1.3rem;
+    cursor: pointer;
+    color: white;
+    padding: 0 24px;
+    transition: background 0.2s;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .arrow-btn:hover { background: var(--teal-dark); }
+  @media (max-width: 768px) {
+    .cta-section { padding: 40px 16px 60px; }
+    .email-row { width: 95%; max-width: 400px; }
+    .email-row input { padding: 12px 16px; font-size: 0.85rem; }
+    .arrow-btn { padding: 0 18px; font-size: 1.2rem; min-height: 44px; }
+  }
+  @media (max-width: 480px) {
+    .email-row { width: 100%; border-radius: 40px; }
+    .email-row input { padding: 10px 14px; font-size: 0.8rem; }
+    .arrow-btn { padding: 0 14px; font-size: 1.1rem; min-height: 42px; }
+  }
+
+  /* FOOTER STYLES */
+  .footer {
+    background: #1a1a1a;
+    color: #ccc;
+    padding: 50px 80px 30px;
+    margin-top: 0;
+  }
+  .footer-cols {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+    margin-bottom: 40px;
+  }
+  .footer-col h4 {
+    color: var(--white);
+    font-size: 0.8rem;
+    letter-spacing: 0.14em;
+    margin-bottom: 18px;
+    font-weight: 600;
+  }
+  .footer-col p, .footer-col a {
+    display: block;
+    font-size: 0.82rem;
+    color: #aaa;
+    line-height: 2;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-col a:hover { color: var(--teal); }
+  .footer-col img { width: 150px; height: auto; object-fit: contain; }
+  .footer-bottom {
+    border-top: 1px solid #333;
+    padding-top: 20px;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #666;
+    line-height: 2;
+  }
+  @media (max-width: 768px) {
+    .footer { padding: 40px 24px 24px; }
+    .footer-cols { grid-template-columns: 1fr; gap: 24px; text-align: center; }
+  }
+
+  @media (max-width: 640px) {
+    .main-wrap { padding: 28px 20px 0; }
+    .summary-bar { padding: 20px; gap: 24px; }
+    .hero-stats { gap: 20px; }
+    .payment-section { padding: 30px 20px; margin: 40px 20px; }
+    .payment-icons { gap: 20px; }
+    .payment-icon i { font-size: 36px; }
+  }
+  @media (max-width: 480px) {
+    .payment-icons { gap: 16px; }
+    .payment-icon i { font-size: 32px; }
+    .payment-icon span { font-size: 10px; }
+  }
+  
+  .loading { text-align: center; padding: 40px; color: var(--gray-400); }
+  @media (max-width: 768px) {
+  .footer-cols {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    text-align: center;
+  }
+  
+  /* This is the key fix - center the image in the footer */
+  .footer-col img {
+    margin: 0 auto;
+    display: block;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  Factory-direct pricing · 99%+ purity · <span>Free shipping over $500</span> · WhatsApp: +852 9315 7951
+</div>
+
+<header>
+  <div class="header-inner">
+    <div class="logo" onclick="window.location.href='index.html'">
+      <img src="assets/logo.png" alt="HM Peptide" style="height: 40px; width: auto;">
+      <div class="logo-text"><span style="color: #00b4a6;">HM</span><em style="color: #1a2b3c;">peptide</em></div>
+    </div>
+    <nav id="mainNav">
+      <a href="index.html">Home</a>
+      <a href="contact.html">Contact us</a>
+      <a href="about.html">About</a>
+      <a href="hmpeptide-sales.html">Sale</a>
+      <a href="reviews.html" class="active">Reviews</a>
+      <a href="product.html">Products</a>
+      <a href="https://wa.me/85293157951" target="_blank" class="nav-contact">WhatsApp Us</a>
+    </nav>
+    <div class="hamburger" id="hamburger" onclick="toggleNav()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+  <div class="menu-overlay" id="menuOverlay" onclick="toggleNav()"></div>
+</header>
+
+<!-- HERO -->
+<section class="page-hero">
+  <h1>Customer <span>Reviews</span></h1>
+  <p>Real feedback from our research community. All reviews are verified and moderated before publishing.</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="stat-num" id="heroTotal">0</div>
+      <div class="stat-label">Total Reviews</div>
+    </div>
+    <div class="hero-stat">
+      <div class="stat-num" id="heroAvg">–</div>
+      <div class="stat-label">Average Rating</div>
+    </div>
+    <div class="hero-stat">
+      <div class="stat-num" id="heroPending">0</div>
+      <div class="stat-label">Awaiting Approval</div>
+    </div>
+  </div>
+</section>
+
+<div class="main-wrap">
+
+  <!-- SUMMARY BAR -->
+  <div class="summary-bar" id="summaryBar" style="display:none;">
+    <div class="summary-score">
+      <div class="score-big" id="scoreBig">–</div>
+      <div class="score-stars" id="scoreStars"></div>
+      <div class="score-count" id="scoreCount"></div>
+    </div>
+    <div class="summary-bars" id="summaryBarsEl"></div>
+    <div class="summary-badges">
+      <div class="summary-badge"><span>✅</span><span>Verified Purchases</span></div>
+      <div class="summary-badge"><span>🔍</span><span>Admin Moderated</span></div>
+      <div class="summary-badge"><span>🌍</span><span>Worldwide Customers</span></div>
+    </div>
+  </div>
+
+  <!-- FILTER -->
+  <div class="filter-row">
+    <span class="filter-label">Filter:</span>
+    <button class="filter-btn active" onclick="setFilter('all', this)">All Reviews</button>
+    <button class="filter-btn" onclick="setFilter(5, this)">★★★★★ 5 Stars</button>
+    <button class="filter-btn" onclick="setFilter(4, this)">★★★★ 4 Stars</button>
+    <button class="filter-btn" onclick="setFilter(3, this)">★★★ 3 Stars</button>
+    <button class="filter-btn" onclick="setFilter(2, this)">★★ 2 Stars</button>
+    <button class="filter-btn" onclick="setFilter(1, this)">★ 1 Star</button>
+  </div>
+
+  <!-- REVIEWS LIST -->
+  <div class="reviews-list" id="reviewsList">
+    <div class="loading">Loading reviews...</div>
+  </div>
+
+  <!-- ADMIN BUTTON -->
+  <div class="admin-toggle-wrap">
+    <a href="admin.html" class="admin-toggle-btn">🔑 Admin Dashboard</a>
+  </div>
+
+</div>
+
+<!-- PAYMENT METHODS SECTION -->
+<div class="payment-section">
+  <h4>We Accept</h4>
+  <div class="payment-icons">
+    <div class="payment-icon"><i class="fab fa-bitcoin"></i><span>BITCOIN</span></div>
+    <div class="payment-icon"><i class="fas fa-university"></i><span>ZELLE</span></div>
+    <div class="payment-icon"><i class="fab fa-paypal"></i><span>PAYPAL</span></div>
+    <div class="payment-icon"><i class="fab fa-square"></i><span>CASHAPP</span></div>
+    <div class="payment-icon"><i class="fas fa-building-columns"></i><span>BANK TRANSFER</span></div>
+  </div>
+</div>
+
+<!-- CTA SECTION -->
+<section class="cta-section">
+  <h2>Add whatsapp to get November price lists</h2>
+  <p>Janoshik test report are available now!</p>
+  <div class="email-row">
+    <input type="email" placeholder="Enter your e-mail address" id="newsEmail" />
+    <button class="arrow-btn" id="subscribeBtn">→</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-cols">
+    <div class="footer-col">
+      <h4>CONTACT US</h4>
+      <p>HM PEPTIDE</p>
+      <p>Whatsapp: +852 9315 7951</p>
+      <p>Email: hmcamlpeptides@gmail.com</p>
+    </div>
+    <div class="footer-col">
+      <h4>FAQ &amp; HELP</h4>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="#">PAYMENT METHODS</a>
+      <a href="#">FAQ</a>
+    </div>
+    <div class="footer-col">
+      <h4>OVERVIEW</h4>
+      <a href="#">PAYMENT METHODS</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="#">Location &amp; Working Hours</a>
+    </div>
+    <div class="footer-col">
+      <h4>CONTACT</h4>
+      <img src="assets/RQR.png" width="100" height="100" alt="Payment methods">
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>Copyright @ 2023 . All rights reserved lamps</p>
+    <p>关于我们 | 经典案例 | 新闻动态 | 服务理由 | 咨询团队 | 联系我们</p>
+    <p>Copyright © 2026 . All rights reserved.</p>
+    <p>河北旺盛卫生用品有限公司</p>
+  </div>
+</footer>
+
+<!-- Floating Sidebar with Icons -->
+<div class="side-contact">
+  <a href="tel:+85293157951" class="side-btn" data-tooltip="Call Us">
+    <i class="fas fa-phone-alt"></i>
+  </a>
+  <a href="mailto:hmcamlpeptides@gmail.com" class="side-btn" data-tooltip="Email Us">
+    <i class="fas fa-envelope"></i>
+  </a>
+  <a href="https://wa.link/rjc3kb" class="side-btn" data-tooltip="WhatsApp" target="_blank">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+  <div class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" data-tooltip="Back to Top">
+    <i class="fas fa-arrow-up"></i>
+  </div>
+</div>
+
+<script>
+// ======================= VISITOR TRACKING - UPDATED FOR CORRECT SCHEMA =======================
+(async function() {
+    const SUPABASE_URL = 'https://jhuwtkhztehhhifetqgb.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_RRDIuWw0eo26aKCHZGRKyQ_BFotKqyV';
+    
+    console.log('🔵 [Reviews Page Tracker] Starting visitor tracking...');
+    
+    try {
+        // Create Supabase client
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Get or create unique visitor ID
+        let visitorId = localStorage.getItem('hm_visitor_id');
+        if (!visitorId) {
+            visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substring(2);
+            localStorage.setItem('hm_visitor_id', visitorId);
+            console.log('🆕 [Reviews Page] New visitor created:', visitorId);
+        } else {
+            console.log('🔁 [Reviews Page] Returning visitor:', visitorId);
+        }
+        
+        // Get IP address
+        let ip = 'Unknown';
+        try {
+            const ipRes = await fetch('https://api.ipify.org?format=json');
+            const ipData = await ipRes.json();
+            ip = ipData.ip;
+            console.log('🌐 [Reviews Page] Got IP:', ip);
+        } catch(e) {
+            console.log('⚠️ [Reviews Page] Could not get IP (using fallback)');
+        }
+        
+        // Get current page
+        const currentPage = window.location.pathname.split('/').pop() || 'reviews.html';
+        
+        // Prepare visitor data - ONLY columns that exist in your table
+        const visitorData = {
+            id: visitorId,
+            ip_address: ip,
+            page: currentPage,
+            user_agent: navigator.userAgent.substring(0, 300),
+            last_seen: new Date().toISOString(),
+            status: 'online'
+        };
+        
+        console.log('📝 [Reviews Page] Saving visitor data:', visitorData);
+        
+        // Try to upsert visitor
+        const { data, error } = await supabase
+            .from('visitors')
+            .upsert(visitorData, { onConflict: 'id' });
+        
+        if (error) {
+            console.error('❌ [Reviews Page] ERROR writing to Supabase:', error);
+            console.error('❌ [Reviews Page] Error details:', error.message);
+        } else {
+            console.log('✅ [Reviews Page] SUCCESS! Visitor saved to database!');
+            console.log('✅ [Reviews Page] You should now see this visitor in the admin dashboard!');
+        }
+        
+        // Set up heartbeat every 30 seconds to keep visitor online
+        setInterval(async () => {
+            try {
+                const newPage = window.location.pathname.split('/').pop() || 'reviews.html';
+                const { error: updateError } = await supabase
+                    .from('visitors')
+                    .update({ 
+                        last_seen: new Date().toISOString(),
+                        page: newPage,
+                        status: 'online'
+                    })
+                    .eq('id', visitorId);
+                
+                if (updateError) {
+                    console.log('⚠️ [Reviews Page] Heartbeat error:', updateError.message);
+                } else {
+                    console.log('💓 [Reviews Page] Heartbeat sent for reviews page');
+                }
+            } catch(e) {
+                console.log('⚠️ [Reviews Page] Heartbeat failed:', e);
+            }
+        }, 30000);
+        
+    } catch(e) {
+        console.error('💥 [Reviews Page] Fatal error:', e);
+    }
+})();
+
+// ======================= REVIEWS FUNCTIONALITY =======================
+
+// Supabase Configuration
+const SUPABASE_URL = 'https://jhuwtkhztehhhifetqgb.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_RRDIuWw0eo26aKCHZGRKyQ_BFotKqyV';
+
+// Create supabase client
+const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentFilter = 'all';
+let cachedReviews = []; // Store reviews here
+
+function starsStr(n) {
+  return Array.from({length:5}, (_,i) => i < n ? '★' : '☆').join('');
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return 'Recent';
+  try {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  } catch(e) {
+    return 'Recent';
+  }
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/[&<>]/g, function(m) {
+    if (m === '&') return '&amp;';
+    if (m === '<') return '&lt;';
+    if (m === '>') return '&gt;';
+    return m;
+  });
+}
+
+/* ── FETCH APPROVED REVIEWS ── */
+async function fetchApprovedReviews() {
+  try {
+    const { data, error } = await _supabase
+      .from('reviews')
+      .select('*')
+      .eq('approved', true)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    
+    console.log('Approved reviews from DB:', data ? data.length : 0);
+    
+    // Store in cache
+    cachedReviews = data || [];
+    return cachedReviews;
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    cachedReviews = [];
+    return [];
+  }
+}
+
+/* ── FETCH PENDING COUNT ── */
+async function fetchPendingCount() {
+  try {
+    const { count, error } = await _supabase
+      .from('reviews')
+      .select('*', { count: 'exact', head: true })
+      .eq('approved', false);
+    
+    if (error) throw error;
+    return count || 0;
+  } catch (error) {
+    console.error('Error fetching pending count:', error);
+    return 0;
+  }
+}
+
+/* ── RENDER SUMMARY ── */
+async function renderSummary() {
+  const pendingCount = await fetchPendingCount();
+  
+  document.getElementById('heroTotal').textContent = cachedReviews.length;
+  document.getElementById('heroPending').textContent = pendingCount;
+
+  if (!cachedReviews.length) {
+    document.getElementById('heroAvg').textContent = '–';
+    document.getElementById('summaryBar').style.display = 'none';
+    return;
+  }
+  
+  const avg = cachedReviews.reduce((s,r) => s + (r.stars || 0), 0) / cachedReviews.length;
+  document.getElementById('heroAvg').textContent = avg.toFixed(1) + '★';
+  document.getElementById('summaryBar').style.display = 'flex';
+  document.getElementById('scoreBig').textContent = avg.toFixed(1);
+  document.getElementById('scoreStars').textContent = starsStr(Math.round(avg));
+  document.getElementById('scoreCount').textContent = `${cachedReviews.length} review${cachedReviews.length>1?'s':''}`;
+
+  const dist = [5,4,3,2,1].map(star => ({ 
+    star, 
+    count: cachedReviews.filter(r => (r.stars || 0) === star).length 
+  }));
+  
+  document.getElementById('summaryBarsEl').innerHTML = dist.map(d => `
+    <div class="bar-row">
+      <span class="bar-label">${d.star} ★</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${cachedReviews.length ? (d.count/cachedReviews.length*100).toFixed(0) : 0}%"></div></div>
+      <span class="bar-count">${d.count}</span>
+    </div>`).join('');
+}
+
+/* ── RENDER REVIEWS ── */
+async function renderReviews() {
+  let filtered = cachedReviews;
+  if (currentFilter !== 'all') {
+    const starFilter = parseInt(currentFilter);
+    filtered = cachedReviews.filter(r => (r.stars || 0) === starFilter);
+  }
+  
+  const list = document.getElementById('reviewsList');
+
+  if (!filtered.length) {
+    list.innerHTML = `<div class="no-reviews-msg"><span>⭐</span>${currentFilter === 'all' ? 'No approved reviews yet.' : 'No reviews with this rating.'}</div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(r => `
+    <div class="review-card">
+      <div class="review-top">
+        <div class="reviewer-left">
+          <div class="reviewer-name">${escapeHtml(r.name || 'Anonymous')}</div>
+          <div class="review-meta">
+            <span class="review-date">${formatDate(r.created_at)}</span>
+            <span class="review-product-tag">Product: ${escapeHtml(r.product_catno || 'N/A')}</span>
+          </div>
+        </div>
+        <div class="review-stars">${starsStr(r.stars || 0)}</div>
+      </div>
+      <div class="review-text">"${escapeHtml(r.review_text || 'No review text provided')}"</div>
+    </div>`).join('');
+}
+
+/* ── REFRESH ALL DATA ── */
+async function refreshAll() {
+  if (cachedReviews.length === 0) {
+    document.getElementById('reviewsList').innerHTML = '<div class="loading">Loading reviews...</div>';
+  }
+  await fetchApprovedReviews();
+  await renderSummary();
+  await renderReviews();
+}
+
+/* ── FILTER ── */
+function setFilter(val, btn) {
+  currentFilter = val;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderReviews();
+}
+
+/* ── MOBILE NAVIGATION ── */
+function toggleNav() {
+  const nav = document.getElementById('mainNav');
+  const hamburger = document.getElementById('hamburger');
+  const overlay = document.getElementById('menuOverlay');
+  if (!nav) return;
+  nav.classList.toggle('open');
+  if (hamburger) hamburger.classList.toggle('open');
+  if (overlay) overlay.classList.toggle('active');
+  if (nav.classList.contains('open')) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = '';
+  }
+}
+
+window.addEventListener('resize', function() {
+  if (window.innerWidth > 820) {
+    const nav = document.getElementById('mainNav');
+    const hamburger = document.getElementById('hamburger');
+    const overlay = document.getElementById('menuOverlay');
+    if (nav && nav.classList.contains('open')) {
+      nav.classList.remove('open');
+      if (hamburger) hamburger.classList.remove('open');
+      if (overlay) overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  }
+});
+
+document.querySelectorAll('#mainNav a').forEach(link => {
+  link.addEventListener('click', () => {
+    const nav = document.getElementById('mainNav');
+    const hamburger = document.getElementById('hamburger');
+    const overlay = document.getElementById('menuOverlay');
+    if (nav && nav.classList.contains('open')) {
+      nav.classList.remove('open');
+      if (hamburger) hamburger.classList.remove('open');
+      if (overlay) overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  });
+});
+
+// Set active navigation based on current page
+(function setActiveNav() {
+  const navLinks = document.querySelectorAll('#mainNav a');
+  if (!navLinks.length) return;
+  let currentPage = window.location.pathname.split('/').pop();
+  if (currentPage === "" || currentPage === "/" || currentPage === null) {
+    currentPage = "index.html";
+  }
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    let href = link.getAttribute('href');
+    if (href && href.includes('wa.me')) return;
+    if (href && href.includes('https://')) return;
+    if (href === currentPage) {
+      link.classList.add('active');
+    }
+    if (currentPage === 'index.html' && (href === 'index.html' || href === '/' || href === '')) {
+      link.classList.add('active');
+    }
+  });
+})();
+
+/* ── NEWSLETTER ── */
+document.getElementById('subscribeBtn')?.addEventListener('click', function() {
+  const email = document.getElementById('newsEmail').value;
+  if (email && email.includes('@')) {
+    alert('Thank you! You will receive the price list soon.');
+    document.getElementById('newsEmail').value = '';
+  } else {
+    alert('Please enter a valid email address.');
+  }
+});
+
+/* ── SETUP REAL-TIME SUBSCRIPTION ── */
+function setupRealtimeSubscription() {
+  const channel = _supabase
+    .channel('reviews-changes')
+    .on('postgres_changes', 
+      { event: '*', schema: 'public', table: 'reviews' }, 
+      () => {
+        console.log('Real-time change detected, refreshing...');
+        refreshAll();
+      }
+    )
+    .subscribe();
+  
+  return channel;
+}
+
+/* ── INITIALIZE ── */
+async function init() {
+  console.log('Initializing Reviews page...');
+  document.getElementById('reviewsList').innerHTML = '<div class="loading">Loading reviews...</div>';
+  await refreshAll();
+  setupRealtimeSubscription();
+  setInterval(refreshAll, 60000); // Refresh every minute as fallback
+}
+
+init();
+</script>
+</body>
+</html>

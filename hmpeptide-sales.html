@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HM Peptide – Sales</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --teal:       #00b4a6;
+    --teal-dark:  #008f84;
+    --teal-light: #e0f7f5;
+    --navy:       #1a2b3c;
+    --gray-100:   #f5f7f9;
+    --gray-200:   #e8ecef;
+    --gray-400:   #9aa5b1;
+    --gray-700:   #4a5568;
+    --white:      #ffffff;
+    --accent:     #ff6b35;
+    --font-head:  'Outfit', sans-serif;
+    --font-body:  'DM Sans', sans-serif;
+    --shadow-sm:  0 2px 8px rgba(0,0,0,0.07);
+    --shadow-md:  0 6px 24px rgba(0,0,0,0.10);
+    --shadow-lg:  0 12px 40px rgba(0,0,0,0.14);
+    --radius:     14px;
+    --transition: 0.22s cubic-bezier(.4,0,.2,1);
+    --dark: #111;
+    --text: #333;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font-body); background: var(--gray-100); color: var(--navy); min-height: 100vh; }
+  a { text-decoration: none; color: inherit; }
+  img { display: block; max-width: 100%; }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    background: var(--navy);
+    color: rgba(255,255,255,0.85);
+    text-align: center;
+    font-size: 12.5px;
+    letter-spacing: 0.03em;
+    padding: 8px 20px;
+    font-family: var(--font-head);
+  }
+  .topbar span { color: var(--teal); font-weight: 600; }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--white);
+    box-shadow: var(--shadow-sm);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-inner {
+    max-width: 1280px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 32px; height: 72px; position: relative;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--font-head); font-weight: 700; font-size: 22px; color: var(--navy);
+    cursor: pointer; z-index: 101;
+  }
+  .logo-icon {
+    width: 40px; height: 40px; background: var(--teal); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 18px; font-weight: 800;
+  }
+  .logo-text em { color: var(--teal); font-style: normal; }
+
+  nav { display: flex; align-items: center; gap: 4px; }
+  nav a {
+    font-family: var(--font-head); font-size: 14px; font-weight: 500;
+    color: var(--gray-700); padding: 8px 16px; border-radius: 8px;
+    transition: color var(--transition), background var(--transition); letter-spacing: 0.01em;
+    text-decoration: none;
+  }
+  nav a:hover, nav a.active { color: var(--teal); background: var(--teal-light); }
+  nav a.active { position: relative; }
+  nav a.active::after {
+    content: ''; position: absolute; left: 50%; transform: translateX(-50%);
+    bottom: 0; width: 24px; height: 2.5px; background: var(--teal); border-radius: 2px;
+  }
+  .nav-contact { background: var(--teal) !important; color: white !important; border-radius: 8px; font-weight: 600 !important; }
+  .nav-contact:hover { background: var(--teal-dark) !important; }
+
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; z-index: 101; background: transparent; border: none; }
+  .hamburger span { display: block; width: 25px; height: 2.5px; background: var(--navy); border-radius: 2px; transition: all 0.3s ease; }
+
+  /* Mobile Navigation - Slide In From Right */
+  @media (max-width: 820px) {
+    .header-inner { padding: 0 20px; }
+    .hamburger { display: flex; }
+    
+    nav {
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 280px;
+      height: 100vh;
+      background: var(--white);
+      padding: 80px 24px 30px;
+      box-shadow: -5px 0 30px rgba(0,0,0,0.15);
+      gap: 8px;
+      z-index: 100;
+      transition: right 0.3s ease;
+      overflow-y: auto;
+    }
+    nav.open { right: 0; }
+    nav a {
+      width: 100%;
+      text-align: left;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 16px;
+    }
+    nav a.active::after { display: none; }
+    nav a.nav-contact { margin-top: 10px; text-align: center; }
+    
+    .menu-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 99;
+    }
+    .menu-overlay.active { display: block; }
+    
+    .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(6px, -6px); }
+  }
+
+  /* ── PAGE HERO ── */
+  .page-hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #0d3b4f 60%, var(--teal-dark) 100%);
+    color: white; padding: 56px 32px 48px; text-align: center; position: relative; overflow: hidden;
+  }
+  .page-hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 70% 50%, rgba(0,180,166,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .page-hero h1 {
+    font-family: var(--font-head); font-size: clamp(28px,4vw,42px);
+    font-weight: 700; letter-spacing: -0.02em; margin-bottom: 12px;
+  }
+  .page-hero h1 span { color: var(--teal); }
+  .page-hero p { font-size: 15px; opacity: 0.75; max-width: 540px; margin: 0 auto 24px; line-height: 1.65; }
+  .badge-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .badge {
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 100px; padding: 6px 16px;
+    font-family: var(--font-head); font-size: 12px; font-weight: 500;
+    color: rgba(255,255,255,0.9); letter-spacing: 0.03em;
+  }
+  .badge.green { background: rgba(0,180,166,0.25); border-color: var(--teal); color: var(--teal); }
+
+  /* ── SORT BAR ── */
+  .sort-bar {
+    max-width: 1280px; margin: 0 auto; padding: 22px 32px 0;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .filter-label { font-family: var(--font-head); font-size: 13px; font-weight: 600; color: var(--gray-400); letter-spacing: 0.06em; text-transform: uppercase; margin-right: 4px; }
+  .filter-btn {
+    padding: 7px 18px; border-radius: 100px; border: 1.5px solid var(--gray-200);
+    background: white; font-family: var(--font-head); font-size: 13px; font-weight: 500;
+    color: var(--gray-700); cursor: pointer; transition: all var(--transition);
+  }
+  .filter-btn:hover { border-color: var(--teal); color: var(--teal); }
+  .filter-btn.active { background: var(--teal); border-color: var(--teal); color: white; }
+
+  /* ── PRODUCTS SECTION ── */
+  .products-section { max-width: 1280px; margin: 0 auto; padding: 28px 32px 20px; }
+  .results-info { font-size: 13px; color: var(--gray-400); margin-bottom: 20px; font-family: var(--font-head); }
+  .results-info strong { color: var(--navy); }
+
+  /* ── GRID ── */
+  .product-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+
+  /* ── CARD ── */
+  .product-card {
+    background: var(--white); border-radius: var(--radius); overflow: hidden;
+    box-shadow: var(--shadow-sm); border: 1.5px solid var(--gray-200);
+    cursor: pointer; transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    display: flex; flex-direction: column; position: relative;
+  }
+  .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--teal); }
+
+  .sale-ribbon {
+    position: absolute; top: 0; right: 0;
+    background: var(--teal); color: white;
+    font-family: var(--font-head); font-size: 11px; font-weight: 800;
+    padding: 5px 12px 5px 16px;
+    clip-path: polygon(12px 0%, 100% 0%, 100% 100%, 0% 100%);
+    z-index: 2; letter-spacing: 0.04em;
+  }
+
+  .card-img {
+    position: relative; background: white;
+    padding: 28px 20px 18px; display: flex; align-items: center; justify-content: center;
+    min-height: 200px; overflow: hidden;
+  }
+  .card-img::before {
+    content: ''; position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
+    width: 120px; height: 60px; background: rgba(0,180,166,0.08); border-radius: 50%; filter: blur(12px);
+  }
+  .card-label-tag {
+    position: absolute; top: 14px; left: 14px;
+    background: var(--teal); color: white;
+    font-family: var(--font-head); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.05em; padding: 3px 9px; border-radius: 100px; text-transform: uppercase; z-index: 2;
+  }
+
+  .card-body { padding: 16px 18px 18px; flex: 1; display: flex; flex-direction: column; gap: 5px; }
+  .card-catno { font-family: var(--font-head); font-size: 11px; font-weight: 600; color: var(--teal); letter-spacing: 0.08em; text-transform: uppercase; }
+  .card-name  { font-family: var(--font-head); font-size: 15px; font-weight: 700; color: var(--navy); line-height: 1.3; }
+  .card-spec  { font-size: 12px; color: var(--gray-400); font-family: var(--font-head); }
+
+  .purity-tag { display: flex; gap: 6px; margin-top: 2px; }
+  .ptag { font-size: 10px; font-family: var(--font-head); font-weight: 500; padding: 2px 8px; border-radius: 4px; }
+  .ptag.purity   { background: #e0f7f5; color: var(--teal-dark); }
+  .ptag.research { background: #fef3ed; color: #c44b0e; }
+
+  .card-stars { display: flex; align-items: center; gap: 4px; margin-top: 3px; }
+  .stars-display { color: #f5a623; font-size: 13px; letter-spacing: 1px; }
+  .stars-count { font-family: var(--font-head); font-size: 11px; color: var(--gray-400); }
+
+  .card-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: auto; padding-top: 10px; border-top: 1px solid var(--gray-200);
+  }
+  .price-block { display: flex; flex-direction: column; gap: 1px; }
+  .original-price { font-family: var(--font-head); font-size: 11px; color: var(--gray-400); text-decoration: line-through; }
+  .sale-price { font-family: var(--font-head); font-size: 20px; font-weight: 800; color: var(--teal-dark); }
+  .sale-price sup { font-size: 12px; font-weight: 600; vertical-align: super; }
+  .save-badge {
+    display: inline-block; background: var(--teal-light); color: var(--teal-dark);
+    font-family: var(--font-head); font-size: 10px; font-weight: 700;
+    padding: 2px 7px; border-radius: 4px;
+  }
+  .card-btn {
+    background: var(--navy); color: white; border: none; border-radius: 8px;
+    padding: 7px 14px; font-family: var(--font-head); font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: background var(--transition);
+  }
+  .card-btn:hover { background: var(--teal); }
+
+  /* ── PAGINATION ── */
+  .pagination-wrap {
+    max-width: 1280px; margin: 0 auto; padding: 32px 32px 48px;
+    display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;
+  }
+  .page-btn {
+    font-family: var(--font-head); font-size: 13px; font-weight: 600;
+    padding: 9px 16px; border-radius: 9px; border: 1.5px solid var(--gray-200);
+    background: white; color: var(--gray-700); cursor: pointer; transition: all var(--transition);
+    min-width: 42px; text-align: center;
+  }
+  .page-btn:hover:not(:disabled) { border-color: var(--teal); color: var(--teal); background: var(--teal-light); }
+  .page-btn.active { background: var(--teal); border-color: var(--teal); color: white; }
+  .page-btn:disabled { opacity: 0.38; cursor: not-allowed; }
+  .page-btn.prev-next { padding: 9px 20px; display: flex; align-items: center; gap: 6px; }
+  .page-btn.prev-next svg { width: 14px; height: 14px; }
+  .page-label { font-family: var(--font-head); font-size: 12px; color: var(--gray-400); padding: 0 8px; align-self: center; }
+
+  /* ── PAYMENT METHODS SECTION ── */
+  .payment-section {
+    max-width: 1280px;
+    margin: 60px auto 60px;
+    padding: 30px 32px;
+    background: var(--white);
+    border-radius: 20px;
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+  }
+  .payment-section h4 {
+    font-family: var(--font-head);
+    font-size: 1.1rem;
+    color: var(--navy);
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+  }
+  .payment-icons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 35px;
+    align-items: center;
+  }
+  .payment-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .payment-icon i {
+    font-size: 48px;
+    color: var(--navy);
+    transition: transform 0.2s;
+  }
+  .payment-icon span {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-700);
+    letter-spacing: 0.5px;
+  }
+  .payment-icon:hover i {
+    transform: translateY(-3px);
+    color: var(--teal);
+  }
+  .fa-bitcoin { color: #F7931A; }
+  .fa-university { color: #2c6e9e; }
+  .fa-paypal { color: #003087; }
+  .fa-square { color: #00c4b4; }
+  .fa-building-columns { color: #4a5568; }
+
+  /* ── FLOATING SIDE ── */
+  .side-contact { position: fixed; right: 0; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; z-index: 200; gap: 2px; }
+  .side-btn {
+    width: 48px; height: 48px; background: var(--white); border: 1px solid var(--gray-200);
+    display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px;
+    transition: background var(--transition), color var(--transition); color: var(--gray-700);
+    text-decoration: none;
+  }
+  .side-btn:hover { background: var(--teal); color: white; transform: translateX(-4px); }
+  .side-btn:first-child { border-radius: 10px 0 0 0; }
+  .back-to-top {
+    width: 48px; height: 48px; background: var(--navy); display: flex; align-items: center;
+    justify-content: center; cursor: pointer; color: white; font-size: 18px;
+    transition: background var(--transition); border-radius: 0 0 0 10px;
+  }
+  .back-to-top:hover { background: var(--teal); transform: translateX(-4px); }
+
+  /* Tooltip for side buttons */
+  .side-btn { position: relative; }
+  .side-btn::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    right: 60px;
+    background: var(--navy);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: var(--font-body);
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+  .side-btn:hover::before {
+    opacity: 1;
+    visibility: visible;
+    right: 55px;
+  }
+
+  /* Responsive sidebar - always visible, just smaller */
+  @media (max-width: 1024px) {
+    .side-contact { right: 8px; }
+    .side-btn, .back-to-top { width: 42px; height: 42px; font-size: 18px; }
+  }
+  @media (max-width: 768px) {
+    .side-contact { right: 5px; }
+    .side-btn, .back-to-top { width: 38px; height: 38px; font-size: 16px; }
+  }
+  @media (max-width: 480px) {
+    .side-contact { right: 5px; }
+    .side-btn, .back-to-top { width: 35px; height: 35px; font-size: 14px; }
+  }
+
+  /* CTA SECTION STYLES */
+  .cta-section {
+    background: var(--white);
+    text-align: center;
+    padding: 60px 20px 80px;
+    border-top: 1px solid #eee;
+    margin-top: 0;
+  }
+  .cta-section h2 {
+    font-family: var(--font-head);
+    font-size: clamp(1.2rem, 5vw, 1.9rem);
+    font-weight: 700;
+    color: var(--navy);
+    max-width: 500px;
+    margin: 0 auto 10px;
+    line-height: 1.3;
+    padding: 0 10px;
+  }
+  .cta-section p {
+    color: #888;
+    font-size: clamp(0.8rem, 3vw, 0.9rem);
+    margin-bottom: 30px;
+    padding: 0 15px;
+  }
+  .email-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 480px;
+    width: 90%;
+    margin: 0 auto;
+    border: 1px solid #aaa;
+    border-radius: 48px;
+    overflow: hidden;
+    background: white;
+  }
+  .email-row input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 0.9rem;
+    padding: 14px 20px;
+    font-family: var(--font-body);
+    color: var(--gray-700);
+    background: transparent;
+    min-width: 0;
+  }
+  .email-row input::placeholder {
+    color: #aaa;
+    font-size: 0.85rem;
+  }
+  .arrow-btn {
+    background: var(--teal);
+    border: none;
+    font-size: 1.3rem;
+    cursor: pointer;
+    color: white;
+    padding: 0 24px;
+    transition: background 0.2s;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .arrow-btn:hover {
+    background: var(--teal-dark);
+  }
+  @media (max-width: 768px) {
+    .cta-section { padding: 40px 16px 60px; }
+    .email-row { width: 95%; max-width: 400px; }
+    .email-row input { padding: 12px 16px; font-size: 0.85rem; }
+    .arrow-btn { padding: 0 18px; font-size: 1.2rem; min-height: 44px; }
+  }
+  @media (max-width: 480px) {
+    .email-row { width: 100%; border-radius: 40px; }
+    .email-row input { padding: 10px 14px; font-size: 0.8rem; }
+    .arrow-btn { padding: 0 14px; font-size: 1.1rem; min-height: 42px; }
+  }
+
+  /* FOOTER STYLES */
+  .footer {
+    background: #1a1a1a;
+    color: #ccc;
+    padding: 50px 80px 30px;
+    margin-top: 0;
+  }
+  .footer-cols {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+    margin-bottom: 40px;
+  }
+  .footer-col h4 {
+    color: var(--white);
+    font-size: 0.8rem;
+    letter-spacing: 0.14em;
+    margin-bottom: 18px;
+    font-weight: 600;
+  }
+  .footer-col p, .footer-col a {
+    display: block;
+    font-size: 0.82rem;
+    color: #aaa;
+    line-height: 2;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-col a:hover { color: var(--teal); }
+  .footer-col img { width: 150px; height: auto; object-fit: contain; }
+  .footer-bottom {
+    border-top: 1px solid #333;
+    padding-top: 20px;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #666;
+    line-height: 2;
+  }
+  @media (max-width: 768px) {
+    .footer { padding: 40px 24px 24px; }
+    .footer-cols { grid-template-columns: 1fr; gap: 24px; text-align: center; }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1100px) { .product-grid { grid-template-columns: repeat(3,1fr); } }
+  @media (max-width: 820px) {
+    .product-grid { grid-template-columns: repeat(2,1fr); }
+    .sort-bar, .products-section, .pagination-wrap { padding-left: 20px; padding-right: 20px; }
+    .payment-section { padding: 30px 20px; margin: 40px 20px; }
+    .payment-icons { gap: 20px; }
+    .payment-icon i { font-size: 36px; }
+  }
+  @media (max-width: 520px) { 
+    .product-grid { grid-template-columns: repeat(2,1fr); gap: 14px; }
+    .payment-icons { gap: 16px; }
+    .payment-icon i { font-size: 32px; }
+    .payment-icon span { font-size: 10px; }
+  }
+  @media (max-width: 380px) { .product-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 768px) {
+  .footer-cols {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    text-align: center;
+  }
+  
+  /* This is the key fix - center the image in the footer */
+  .footer-col img {
+    margin: 0 auto;
+    display: block;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+   Limited-time sale — <span>10% off all products over $150</span> · Free shipping over $500
+</div>
+
+<header>
+  <div class="header-inner">
+    <div class="logo" onclick="window.location.href='index.html'">
+      <img src="assets/logo.png" alt="HM Peptide" style="height: 40px; width: auto;">
+      <div class="logo-text"><span style="color: #00b4a6;">HM</span><em style="color: #1a2b3c;">peptide</em></div>
+    </div>
+    <nav id="mainNav">
+      <a href="index.html">Home</a>
+      <a href="contact.html">Contact us</a>
+      <a href="about.html">About</a>
+      <a href="hmpeptide-sales.html" class="active">Sale</a>
+      <a href="reviews.html">Reviews</a>
+      <a href="product.html">Products</a>
+      <a href="https://wa.me/447594241881" target="_blank" class="nav-contact">WhatsApp Us</a>
+    </nav>
+    <div class="hamburger" id="hamburger" onclick="toggleNav()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+  <div class="menu-overlay" id="menuOverlay" onclick="toggleNav()"></div>
+</header>
+
+<section class="page-hero">
+  <h1> <span>Sale</span> — 10% Off</h1>
+  <p>All products over $150 are now 10% off. Factory-direct pricing, 99%+ purity, verified by Janoshik.</p>
+  <div class="badge-row">
+    <div class="badge green">✓ 10% OFF all $150+ products</div>
+    <div class="badge">99%+ Purity</div>
+    <div class="badge">Research Use Only</div>
+    <div class="badge">10 vials / kit</div>
+  </div>
+</section>
+
+<div class="sort-bar">
+  <span class="filter-label">Sort:</span>
+  <button class="filter-btn active" onclick="setSort('default',this)">Featured</button>
+  <button class="filter-btn" onclick="setSort('saving_desc',this)">Biggest Saving ↓</button>
+  <button class="filter-btn" onclick="setSort('price_asc',this)">Price: Low → High</button>
+  <button class="filter-btn" onclick="setSort('price_desc',this)">Price: High → Low</button>
+  <button class="filter-btn" onclick="setSort('top_rated',this)">Top Rated ★</button>
+</div>
+
+<section class="products-section">
+  <div class="results-info" id="resultsInfo"></div>
+  <div class="product-grid" id="productGrid"></div>
+</section>
+
+<div class="pagination-wrap" id="paginationWrap"></div>
+
+<!-- PAYMENT METHODS SECTION -->
+<div class="payment-section">
+  <h4>We Accept</h4>
+  <div class="payment-icons">
+    <div class="payment-icon"><i class="fab fa-bitcoin"></i><span>BITCOIN</span></div>
+    <div class="payment-icon"><i class="fas fa-university"></i><span>ZELLE</span></div>
+    <div class="payment-icon"><i class="fab fa-paypal"></i><span>PAYPAL</span></div>
+    <div class="payment-icon"><i class="fab fa-square"></i><span>CASHAPP</span></div>
+    <div class="payment-icon"><i class="fas fa-building-columns"></i><span>BANK TRANSFER</span></div>
+  </div>
+</div>
+
+<!-- CTA SECTION -->
+<section class="cta-section">
+  <h2>Add whatsapp to get November price lists</h2>
+  <p>Janoshik test report are available now!</p>
+  <div class="email-row">
+    <input type="email" placeholder="Enter your e-mail address" id="newsEmail" />
+    <button class="arrow-btn" id="subscribeBtn">→</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-cols">
+    <div class="footer-col">
+      <h4>CONTACT US</h4>
+      <p>HM PEPTIDE</p>
+      <p>Whatsapp: +852 9315 7951</p>
+      <p>Email: hmcamlpeptides@gmail.com</p>
+    </div>
+    <div class="footer-col">
+      <h4>FAQ &amp; HELP</h4>
+     <a href="privacy.html" >Privacy Policy</a>
+      <a href="#">PAYMENT METHODS</a>
+      <a href="#">FAQ</a>
+    </div>
+    <div class="footer-col">
+      <h4>OVERVIEW</h4>
+      <a href="#">PAYMENT METHODS</a>
+     <a href="privacy.html" >Privacy Policy</a>
+      <a href="#">Location &amp; Working Hours</a>
+    </div>
+    <div class="footer-col">
+      <h4>CONTACT</h4>
+      <img src="assets/RQR.png" width="100" height="100" alt="Payment methods">
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>Copyright @ 2023 . All rights reserved lamps</p>
+    <p>关于我们 | 经典案例 | 新闻动态 | 服务理由 | 咨询团队 | 联系我们</p>
+    <p>Copyright © 2026 . All rights reserved.</p>
+    <p>河北旺盛卫生用品有限公司</p>
+  </div>
+</footer>
+
+<!-- Floating Sidebar with Icons -->
+<div class="side-contact">
+  <a href="tel:+447594241881" class="side-btn" data-tooltip="Call Us">
+    <i class="fas fa-phone-alt"></i>
+  </a>
+  <a href="mailto:hmcamlpeptides@gmail.com" class="side-btn" data-tooltip="Email Us">
+    <i class="fas fa-envelope"></i>
+  </a>
+  <a href="https://wa.me/447594241881" class="side-btn" data-tooltip="WhatsApp" target="_blank">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+  <div class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" data-tooltip="Back to Top">
+    <i class="fas fa-arrow-up"></i>
+  </div>
+</div>
+
+<script>
+// ======================= VISITOR TRACKING - UPDATED FOR CORRECT SCHEMA =======================
+(async function() {
+    const SUPABASE_URL = 'https://jhuwtkhztehhhifetqgb.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_RRDIuWw0eo26aKCHZGRKyQ_BFotKqyV';
+    
+    console.log('🔵 [Sales Page Tracker] Starting visitor tracking...');
+    
+    try {
+        // Create Supabase client
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Get or create unique visitor ID
+        let visitorId = localStorage.getItem('hm_visitor_id');
+        if (!visitorId) {
+            visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substring(2);
+            localStorage.setItem('hm_visitor_id', visitorId);
+            console.log('🆕 [Sales Page] New visitor created:', visitorId);
+        } else {
+            console.log('🔁 [Sales Page] Returning visitor:', visitorId);
+        }
+        
+        // Get IP address
+        let ip = 'Unknown';
+        try {
+            const ipRes = await fetch('https://api.ipify.org?format=json');
+            const ipData = await ipRes.json();
+            ip = ipData.ip;
+            console.log('🌐 [Sales Page] Got IP:', ip);
+        } catch(e) {
+            console.log('⚠️ [Sales Page] Could not get IP (using fallback)');
+        }
+        
+        // Get current page
+        const currentPage = window.location.pathname.split('/').pop() || 'hmpeptide-sales.html';
+        
+        // Prepare visitor data - ONLY columns that exist in your table
+        const visitorData = {
+            id: visitorId,
+            ip_address: ip,
+            page: currentPage,
+            user_agent: navigator.userAgent.substring(0, 300),
+            last_seen: new Date().toISOString(),
+            status: 'online'
+        };
+        
+        console.log('📝 [Sales Page] Saving visitor data:', visitorData);
+        
+        // Try to upsert visitor
+        const { data, error } = await supabase
+            .from('visitors')
+            .upsert(visitorData, { onConflict: 'id' });
+        
+        if (error) {
+            console.error('❌ [Sales Page] ERROR writing to Supabase:', error);
+            console.error('❌ [Sales Page] Error details:', error.message);
+        } else {
+            console.log('✅ [Sales Page] SUCCESS! Visitor saved to database!');
+            console.log('✅ [Sales Page] You should now see this visitor in the admin dashboard!');
+        }
+        
+        // Set up heartbeat every 30 seconds to keep visitor online
+        setInterval(async () => {
+            try {
+                const newPage = window.location.pathname.split('/').pop() || 'hmpeptide-sales.html';
+                const { error: updateError } = await supabase
+                    .from('visitors')
+                    .update({ 
+                        last_seen: new Date().toISOString(),
+                        page: newPage,
+                        status: 'online'
+                    })
+                    .eq('id', visitorId);
+                
+                if (updateError) {
+                    console.log('⚠️ [Sales Page] Heartbeat error:', updateError.message);
+                } else {
+                    console.log('💓 [Sales Page] Heartbeat sent for sales page');
+                }
+            } catch(e) {
+                console.log('⚠️ [Sales Page] Heartbeat failed:', e);
+            }
+        }, 30000);
+        
+    } catch(e) {
+        console.error('💥 [Sales Page] Fatal error:', e);
+    }
+})();
+
+const DISCOUNT = 0.10;
+
+const ALL_PRODUCTS = [
+  { catNo:'TR50',  name:'Tirzepatide',                        spec:'50 mg/vial, 10 vials/kit',   price:150, cas:'2023788-19-2',  cat:'glp1'   },
+  { catNo:'TR60',  name:'Tirzepatide',                        spec:'60 mg/vial, 10 vials/kit',   price:170, cas:'2023788-19-2',  cat:'glp1'   },
+  { catNo:'RT20',  name:'Retatrutide',                        spec:'20 mg/vial, 10 vials/kit',   price:150, cas:'2381089-83-2',  cat:'glp1'   },
+  { catNo:'RT30',  name:'Retatrutide',                        spec:'30 mg/vial, 10 vials/kit',   price:200, cas:'2381089-83-2',  cat:'glp1'   },
+  { catNo:'RT40',  name:'Retatrutide',                        spec:'40 mg/vial, 10 vials/kit',   price:220, cas:'2381089-83-2',  cat:'glp1'   },
+  { catNo:'RT50',  name:'Retatrutide',                        spec:'50 mg/vial, 10 vials/kit',   price:240, cas:'2381089-83-2',  cat:'glp1'   },
+  { catNo:'RT60',  name:'Retatrutide',                        spec:'60 mg/vial, 10 vials/kit',   price:260, cas:'2381089-83-2',  cat:'glp1'   },
+  { catNo:'CGL10', name:'Cagrilintide',                       spec:'10 mg/vial, 10 vials/kit',   price:160, cas:'1415456-99-3',  cat:'glp1'   },
+  { catNo:'CS10',  name:'Cagrilintide 5mg + Semaglutide 5mg', spec:'10 mg/vial, 10 vials/kit',  price:160, cas:'–',             cat:'glp1'   },
+  { catNo:'SUR10', name:'Survodutide',                        spec:'10 mg/vial, 10 vials/kit',   price:280, cas:'2805997-46-8',  cat:'glp1'   },
+  { catNo:'AP5',   name:'Adipotide',                          spec:'5 mg/vial, 10 vials/kit',    price:150, cas:'859216-15-2',   cat:'other'  },
+  { catNo:'TSM10', name:'Tesamorelin',                        spec:'10 mg/vial, 10 vials/kit',   price:180, cas:'218949-48-5',   cat:'growth' },
+  { catNo:'FN1',   name:'Follistatin',                        spec:'1 mg/vial, 10 vials/kit',    price:230, cas:'80449-31-6',    cat:'growth' },
+  { catNo:'GDF8',  name:'GDF-8',                              spec:'1 mg/vial, 10 vials/kit',    price:170, cas:'271597-12-7',   cat:'growth' },
+  { catNo:'IG1',   name:'IGF-1 LR3',                          spec:'1 mg/vial, 10 vials/kit',    price:180, cas:'946870-92-4',   cat:'growth' },
+  { catNo:'MS40',  name:'MOTs-c',                             spec:'40 mg/vial, 10 vials/kit',   price:175, cas:'1627580-64-6',  cat:'growth' },
+  { catNo:'2S50',  name:'SS-31',                              spec:'50 mg/vial, 10 vials/kit',   price:300, cas:'736992-21-5',   cat:'healing'},
+  { catNo:'F410',  name:'FOXO4',                              spec:'10 mg/vial, 10 vials/kit',   price:280, cas:'–',             cat:'healing'},
+  { catNo:'AE1',   name:'ACE-031',                            spec:'1 mg/vial, 10 vials/kit',    price:188, cas:'1621169-52-5',  cat:'healing'},
+  { catNo:'BB20',  name:'BPC 10mg + TB 10mg',                 spec:'20 mg/vial, 10 vials/kit',   price:155, cas:'–',             cat:'healing'},
+  { catNo:'BBG70', name:'Glow (BPC+GHK-CU+TB500)',            spec:'70 mg/vial, 10 vials/kit',   price:160, cas:'–',             cat:'healing'},
+  { catNo:'KLOW80',name:'CU50+TB10+BC10+KPV10',               spec:'80 mg/vial, 10 vials/kit',   price:200, cas:'–',             cat:'healing'},
+];
+
+/* Compute sale prices */
+const SALE_PRODUCTS = ALL_PRODUCTS.map(p => ({
+  ...p,
+  salePrice: +( p.price * (1 - DISCOUNT) ).toFixed(2),
+  saving:    +( p.price * DISCOUNT ).toFixed(2),
+}));
+
+/* ── REVIEWS stored in localStorage (fallback when Supabase not available) ── */
+function getReviews(catNo) {
+  try { return JSON.parse(localStorage.getItem('reviews_' + catNo) || '[]'); } catch { return []; }
+}
+function getAvgRating(catNo) {
+  const revs = getReviews(catNo);
+  if (!revs.length) return null;
+  return revs.reduce((s,r) => s + r.stars, 0) / revs.length;
+}
+function starsHTML(avg, count) {
+  if (avg === null) return '';
+  const full = Math.round(avg);
+  let s = '';
+  for (let i = 1; i <= 5; i++) s += i <= full ? '★' : '☆';
+  return `<div class="card-stars"><span class="stars-display">${s}</span><span class="stars-count">(${count})</span></div>`;
+}
+
+/* ── STATE ── */
+const PAGE_SIZE = 16;
+let currentPage     = 1;
+let displayProducts = [...SALE_PRODUCTS];
+
+/* ── SORT ── */
+function setSort(type, btn) {
+  currentPage = 1;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const list = [...SALE_PRODUCTS];
+  if      (type === 'saving_desc') list.sort((a,b) => b.saving - a.saving);
+  else if (type === 'price_asc')   list.sort((a,b) => a.salePrice - b.salePrice);
+  else if (type === 'price_desc')  list.sort((a,b) => b.salePrice - a.salePrice);
+  else if (type === 'top_rated')   list.sort((a,b) => (getAvgRating(b.catNo)||0) - (getAvgRating(a.catNo)||0));
+  displayProducts = list;
+  render();
+}
+
+/* ── RENDER ── */
+function render() {
+  const grid  = document.getElementById('productGrid');
+  const info  = document.getElementById('resultsInfo');
+  const total = displayProducts.length;
+  const pages = Math.ceil(total / PAGE_SIZE);
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const slice = displayProducts.slice(start, start + PAGE_SIZE);
+
+  info.innerHTML = `Showing <strong>${start+1}–${Math.min(start+PAGE_SIZE,total)}</strong> of <strong>${total}</strong> sale products`;
+
+  grid.innerHTML = slice.map(p => {
+    const sp    = p.salePrice % 1 === 0 ? p.salePrice : p.salePrice.toFixed(2);
+    const revs  = getReviews(p.catNo);
+    const avg   = getAvgRating(p.catNo);
+    const stars = starsHTML(avg, revs.length);
+    return `
+    <div class="product-card" onclick="goToDetail('${p.catNo}')" data-img="${p.catNo}">
+      <div class="sale-ribbon">10% OFF</div>
+      <div class="card-img">
+        <span class="card-label-tag">${p.catNo}</span>
+        <img src="images/${p.catNo}.png" alt="${p.name}" style="height:180px;object-fit:contain;position:relative;z-index:1;"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+        <div style="display:none;width:100px;height:120px;align-items:center;justify-content:center;font-size:36px;opacity:0.25;">🧪</div>
+      </div>
+      <div class="card-body">
+        <div class="card-catno">${p.catNo}</div>
+        <div class="card-name">${p.name}</div>
+        <div class="card-spec">${p.spec}</div>
+        <div class="purity-tag">
+          <span class="ptag purity">99% Purity</span>
+          <span class="ptag research">Research Only</span>
+        </div>
+        ${stars}
+        <div class="card-footer">
+          <div class="price-block">
+            <div class="original-price">Was: $${p.price}</div>
+            <div class="sale-price"><sup>$</sup>${sp}</div>
+            <div class="save-badge">SAVE $${p.saving.toFixed(0)}</div>
+          </div>
+          <button class="card-btn" onclick="event.stopPropagation();goToDetail('${p.catNo}')">Details</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  renderPagination(pages);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ── navigate to detail page ── */
+function goToDetail(catNo) {
+  window.location.href = `hmpeptide-sale-detail.html?product=${catNo}`;
+}
+
+/* ── PAGINATION ── */
+function renderPagination(totalPages) {
+  const wrap = document.getElementById('paginationWrap');
+  if (totalPages <= 1) { wrap.innerHTML = ''; return; }
+  let html = '';
+  html += `<button class="page-btn prev-next" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 4L6 8l4 4"/></svg>Prev</button>`;
+  html += pageBtn(1);
+  if (currentPage > 4) html += `<span class="page-label">…</span>`;
+  for (let i = Math.max(2,currentPage-2); i <= Math.min(totalPages-1,currentPage+2); i++) html += pageBtn(i);
+  if (currentPage < totalPages-3) html += `<span class="page-label">…</span>`;
+  if (totalPages > 1) html += pageBtn(totalPages);
+  html += `<button class="page-btn prev-next" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>
+    Next<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg></button>`;
+  wrap.innerHTML = html;
+}
+function pageBtn(n) { return `<button class="page-btn ${n===currentPage?'active':''}" onclick="goPage(${n})">${n}</button>`; }
+function goPage(n) {
+  const total = Math.ceil(displayProducts.length / PAGE_SIZE);
+  if (n < 1 || n > total) return;
+  currentPage = n; render();
+}
+
+/* ── MOBILE NAVIGATION ── */
+function toggleNav() {
+  const nav = document.getElementById('mainNav');
+  const hamburger = document.getElementById('hamburger');
+  const overlay = document.getElementById('menuOverlay');
+  if (!nav) return;
+  nav.classList.toggle('open');
+  if (hamburger) hamburger.classList.toggle('open');
+  if (overlay) overlay.classList.toggle('active');
+  if (nav.classList.contains('open')) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = '';
+  }
+}
+
+window.addEventListener('resize', function() {
+  if (window.innerWidth > 820) {
+    const nav = document.getElementById('mainNav');
+    const hamburger = document.getElementById('hamburger');
+    const overlay = document.getElementById('menuOverlay');
+    if (nav && nav.classList.contains('open')) {
+      nav.classList.remove('open');
+      if (hamburger) hamburger.classList.remove('open');
+      if (overlay) overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  }
+});
+
+document.querySelectorAll('#mainNav a').forEach(link => {
+  link.addEventListener('click', () => {
+    const nav = document.getElementById('mainNav');
+    const hamburger = document.getElementById('hamburger');
+    const overlay = document.getElementById('menuOverlay');
+    if (nav && nav.classList.contains('open')) {
+      nav.classList.remove('open');
+      if (hamburger) hamburger.classList.remove('open');
+      if (overlay) overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  });
+});
+
+// Set active navigation based on current page
+(function setActiveNav() {
+  const navLinks = document.querySelectorAll('#mainNav a');
+  if (!navLinks.length) return;
+  let currentPageName = window.location.pathname.split('/').pop();
+  if (currentPageName === "" || currentPageName === "/" || currentPageName === null) {
+    currentPageName = "index.html";
+  }
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    let href = link.getAttribute('href');
+    if (href && href.includes('wa.me')) return;
+    if (href && href.includes('https://')) return;
+    if (href === currentPageName) {
+      link.classList.add('active');
+    }
+    if (currentPageName === 'index.html' && (href === 'index.html' || href === '/' || href === '')) {
+      link.classList.add('active');
+    }
+  });
+})();
+
+/* ── NEWSLETTER ── */
+document.getElementById('subscribeBtn')?.addEventListener('click', function() {
+  const email = document.getElementById('newsEmail').value;
+  if (email && email.includes('@')) {
+    alert('Thank you! You will receive the price list soon.');
+    document.getElementById('newsEmail').value = '';
+  } else {
+    alert('Please enter a valid email address.');
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') goPage(currentPage+1);
+  if (e.key === 'ArrowLeft')  goPage(currentPage-1);
+});
+
+render();
+</script>
+</body>
+</html>

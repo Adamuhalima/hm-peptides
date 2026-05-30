@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+<title>HM Peptide – Admin Dashboard | Review & Visitor Control</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+  :root {
+    --teal: #00b4a6;
+    --teal-dark: #008f84;
+    --teal-light: #e0f7f5;
+    --navy: #1a2b3c;
+    --gray-100: #f5f7f9;
+    --gray-200: #e8ecef;
+    --gray-400: #9aa5b1;
+    --gray-700: #4a5568;
+    --white: #ffffff;
+    --red: #e74c3c;
+    --green: #27ae60;
+    --orange: #f39c12;
+    --font-head: 'Outfit', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.07);
+    --shadow-md: 0 6px 24px rgba(0,0,0,0.10);
+    --radius: 14px;
+    --transition: 0.22s cubic-bezier(.4,0,.2,1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-body); background: var(--gray-100); color: var(--navy); }
+  
+  .login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--navy) 0%, #0d3b4f 100%);
+  }
+  .login-box {
+    background: var(--white);
+    padding: 48px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+  }
+  .login-box h1 {
+    font-family: var(--font-head);
+    font-size: 28px;
+    color: var(--teal);
+    margin-bottom: 8px;
+  }
+  .login-box h1 i { margin-right: 10px; }
+  .login-box p {
+    color: var(--gray-400);
+    margin-bottom: 32px;
+  }
+  .password-wrapper {
+    position: relative;
+    margin-bottom: 20px;
+  }
+  .login-box input {
+    width: 100%;
+    padding: 14px 45px 14px 16px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 10px;
+    font-size: 16px;
+    font-family: var(--font-body);
+    transition: border-color var(--transition);
+  }
+  .login-box input:focus {
+    outline: none;
+    border-color: var(--teal);
+  }
+  .toggle-password {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--gray-400);
+    font-size: 18px;
+    z-index: 10;
+    background: white;
+    padding: 0 5px;
+  }
+  .toggle-password:hover { color: var(--teal); }
+  .login-box button {
+    width: 100%;
+    padding: 14px;
+    background: var(--teal);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--font-head);
+    transition: background var(--transition);
+  }
+  .login-box button:hover { background: var(--teal-dark); }
+  .login-box button i { margin-right: 8px; }
+  .error-msg {
+    color: var(--red);
+    margin-top: 16px;
+    display: none;
+  }
+  .error-msg i { margin-right: 5px; }
+  
+  .dashboard-container { display: none; }
+  
+  .admin-header {
+    background: var(--navy);
+    color: white;
+    padding: 16px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .admin-header h1 {
+    font-family: var(--font-head);
+    font-size: 20px;
+  }
+  .admin-header h1 i {
+    color: var(--teal);
+    margin-right: 8px;
+  }
+  .logout-btn {
+    background: var(--red);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-family: var(--font-head);
+    transition: background var(--transition);
+  }
+  .logout-btn i { margin-right: 8px; }
+  .logout-btn:hover { background: #c0392b; }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
+    padding: 32px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .stat-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+    transition: transform 0.3s ease;
+  }
+  .stat-card:hover { transform: translateY(-5px); }
+  .stat-card i {
+    font-size: 48px;
+    color: var(--teal);
+    margin-bottom: 12px;
+  }
+  .stat-card .stat-value {
+    font-family: var(--font-head);
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .stat-card .stat-label {
+    color: var(--gray-400);
+    font-size: 14px;
+    margin-top: 8px;
+  }
+  
+  .visitors-section {
+    background: var(--white);
+    margin: 0 32px 32px 32px;
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .visitors-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .visitors-header h2 {
+    font-family: var(--font-head);
+    font-size: 20px;
+    color: var(--navy);
+  }
+  .visitors-header h2 i {
+    color: var(--teal);
+    margin-right: 8px;
+  }
+  .online-badge {
+    background: var(--green);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .online-badge i { margin-right: 5px; }
+  .visitors-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  .visitor-card {
+    background: var(--gray-100);
+    border-radius: 10px;
+    padding: 16px;
+    border-left: 4px solid var(--teal);
+    transition: transform 0.3s ease;
+  }
+  .visitor-card:hover { transform: translateX(5px); }
+  .visitor-card .visitor-ip {
+    font-family: var(--font-head);
+    font-weight: 600;
+    color: var(--navy);
+  }
+  .visitor-card .visitor-page {
+    font-size: 12px;
+    color: var(--gray-400);
+    margin: 4px 0;
+  }
+  .visitor-card .visitor-time {
+    font-size: 11px;
+    color: var(--gray-400);
+  }
+  .online-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    margin-right: 6px;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  
+  .reviews-section {
+    background: var(--white);
+    margin: 0 32px 32px 32px;
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .reviews-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .reviews-header h2 {
+    font-family: var(--font-head);
+    font-size: 20px;
+  }
+  .reviews-header h2 i {
+    color: var(--teal);
+    margin-right: 8px;
+  }
+  .filter-tabs {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .filter-tab {
+    padding: 8px 20px;
+    background: var(--gray-100);
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: var(--font-head);
+    font-weight: 500;
+    transition: all var(--transition);
+  }
+  .filter-tab i { margin-right: 5px; }
+  .filter-tab:hover { background: var(--teal-light); }
+  .filter-tab.active {
+    background: var(--teal);
+    color: white;
+  }
+  .btn-refresh {
+    background: var(--teal);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background var(--transition);
+  }
+  .btn-refresh i { margin-right: 5px; }
+  .btn-refresh:hover { background: var(--teal-dark); }
+  .reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-height: 600px;
+    overflow-y: auto;
+  }
+  .review-item {
+    background: var(--gray-100);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid var(--gray-200);
+    transition: transform 0.3s ease;
+  }
+  .review-item:hover { transform: translateX(5px); }
+  .review-item.pending { border-left: 4px solid var(--orange); }
+  .review-item.approved { border-left: 4px solid var(--green); }
+  .review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .reviewer-info h4 {
+    font-family: var(--font-head);
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+  .reviewer-info .review-meta {
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+  .review-stars {
+    color: #f5a623;
+    font-size: 16px;
+    letter-spacing: 2px;
+  }
+  .review-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--gray-700);
+    margin-bottom: 16px;
+  }
+  .review-actions {
+    display: flex;
+    gap: 12px;
+  }
+  .btn-approve {
+    background: var(--green);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background var(--transition);
+  }
+  .btn-approve i { margin-right: 5px; }
+  .btn-approve:hover { background: #219a52; }
+  .btn-reject {
+    background: var(--red);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background var(--transition);
+  }
+  .btn-reject i { margin-right: 5px; }
+  .btn-reject:hover { background: #c0392b; }
+  .btn-delete {
+    background: var(--red);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background var(--transition);
+  }
+  .btn-delete i { margin-right: 5px; }
+  .btn-delete:hover { background: #c0392b; }
+  .approved-badge {
+    background: #27ae60;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 48px;
+    color: var(--gray-400);
+  }
+  .empty-state i {
+    font-size: 48px;
+    margin-bottom: 16px;
+    display: block;
+  }
+  .loading-spinner {
+    text-align: center;
+    padding: 40px;
+  }
+  .loading-spinner i {
+    font-size: 48px;
+    color: var(--teal);
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--green);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    z-index: 1000;
+    animation: slideIn 0.3s ease;
+    font-weight: 500;
+    box-shadow: var(--shadow-md);
+  }
+  .notification.error { background: var(--red); }
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  
+  @media (max-width: 768px) {
+    .stats-grid { padding: 16px; gap: 16px; }
+    .visitors-section, .reviews-section { margin: 0 16px 16px 16px; padding: 16px; }
+    .admin-header { padding: 16px; }
+    .login-box { padding: 32px 24px; margin: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="loginContainer" class="login-container">
+  <div class="login-box">
+    <h1><i class="fas fa-lock"></i> Admin Access</h1>
+    <p><i class="fas fa-shield-alt"></i> Enter your credentials to access the dashboard</p>
+    <div class="password-wrapper">
+      <input type="password" id="adminPassword" placeholder="Enter admin password">
+      <i class="fas fa-eye toggle-password" id="togglePassword"></i>
+    </div>
+    <button id="loginBtn"><i class="fas fa-sign-in-alt"></i> Login to Dashboard</button>
+    <div id="loginError" class="error-msg"><i class="fas fa-exclamation-triangle"></i> Incorrect password. Please try again.</div>
+  </div>
+</div>
+
+<div id="dashboardContainer" class="dashboard-container">
+  <div class="admin-header">
+    <h1><i class="fas fa-chart-line"></i> HM Peptide Admin Dashboard</h1>
+    <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <i class="fas fa-star"></i>
+      <div class="stat-value" id="totalReviews">0</div>
+      <div class="stat-label">Total Reviews (All)</div>
+    </div>
+    <div class="stat-card">
+      <i class="fas fa-clock"></i>
+      <div class="stat-value" id="pendingReviews">0</div>
+      <div class="stat-label">Pending Approval</div>
+    </div>
+    <div class="stat-card">
+      <i class="fas fa-check-circle"></i>
+      <div class="stat-value" id="approvedReviews">0</div>
+      <div class="stat-label">Approved Reviews</div>
+    </div>
+    <div class="stat-card">
+      <i class="fas fa-chart-line"></i>
+      <div class="stat-value" id="avgRating">0.0</div>
+      <div class="stat-label">Average Rating (Approved)</div>
+    </div>
+  </div>
+
+  <div class="visitors-section">
+    <div class="visitors-header">
+      <h2><i class="fas fa-users"></i> Real-time Visitors</h2>
+      <span class="online-badge" id="onlineCount"><i class="fas fa-circle"></i> 0 Online</span>
+    </div>
+    <div id="visitorsList" class="visitors-list">
+      <div class="loading-spinner"><i class="fas fa-spinner"></i><br>Loading visitors...</div>
+    </div>
+  </div>
+
+  <div class="reviews-section">
+    <div class="reviews-header">
+      <h2><i class="fas fa-comments"></i> Review Management</h2>
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="pending"><i class="fas fa-hourglass-half"></i> Pending</button>
+        <button class="filter-tab" data-filter="approved"><i class="fas fa-check-circle"></i> Approved</button>
+        <button class="filter-tab" data-filter="all"><i class="fas fa-list"></i> All</button>
+        <button class="btn-refresh" id="refreshBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
+      </div>
+    </div>
+    <div id="reviewsList" class="reviews-list">
+      <div class="loading-spinner"><i class="fas fa-spinner"></i><br>Loading reviews...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+    const SUPABASE_URL = 'https://jhuwtkhztehhhifetqgb.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_RRDIuWw0eo26aKCHZGRKyQ_BFotKqyV';
+    const ADMIN_PASSWORD = 'hmpeptide2025';
+    
+    let supabase = null;
+    let currentFilter = 'pending';
+    let isLoggedIn = false;
+    let refreshInterval = null;
+    let adminVisitorId = null;
+    let realtimeSubscribed = false;
+    
+    function log(msg, data) { if(data) console.log('[ADMIN]', msg, data); else console.log('[ADMIN]', msg); }
+    
+    function showNotification(message, isError = false) {
+        const notification = document.createElement('div');
+        notification.className = 'notification' + (isError ? ' error' : '');
+        notification.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3200);
+    }
+    
+    function formatDate(dateStr) {
+        if (!dateStr) return 'Unknown date';
+        try {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        } catch(e) { return 'Recently'; }
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    function formatTime(timestamp) {
+        if (!timestamp) return 'Just now';
+        const diff = Math.floor((Date.now() - new Date(timestamp)) / 60000);
+        if (diff < 1) return 'Just now';
+        if (diff < 60) return diff + ' min ago';
+        return new Date(timestamp).toLocaleTimeString();
+    }
+    
+    function initSupabase() {
+        try {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            log('Supabase client created');
+            return true;
+        } catch(e) {
+            log('Supabase init error: ' + e.message);
+            return false;
+        }
+    }
+    
+    // ======================= STATS =======================
+    async function loadStats() {
+        try {
+            const { data, error } = await supabase.from('reviews').select('approved, stars');
+            if (error) throw error;
+            
+            const total = data.length;
+            const approved = data.filter(r => r.approved === true || r.approved === 'true').length;
+            const pending = total - approved;
+            
+            let avg = 0;
+            if (approved > 0) {
+                const approvedReviews = data.filter(r => r.approved === true || r.approved === 'true');
+                const sumStars = approvedReviews.reduce((sum, r) => sum + (r.stars || 0), 0);
+                avg = (sumStars / approved).toFixed(1);
+            }
+            document.getElementById('totalReviews').textContent = total;
+            document.getElementById('pendingReviews').textContent = pending;
+            document.getElementById('approvedReviews').textContent = approved;
+            document.getElementById('avgRating').textContent = avg;
+            log(`Stats - total:${total}, pending:${pending}, approved:${approved}, avg:${avg}`);
+        } catch(e) { 
+            log('Stats error: ' + e.message);
+        }
+    }
+    
+    // ======================= LOAD REVIEWS =======================
+    async function loadReviews() {
+        try {
+            const { data, error } = await supabase.from('reviews').select('*').order('created_at', { ascending: false });
+            if (error) throw error;
+            
+            if (!data || data.length === 0) {
+                document.getElementById('reviewsList').innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i>No reviews found in database</div>';
+                return;
+            }
+            
+            let filtered = [];
+            if (currentFilter === 'pending') {
+                filtered = data.filter(r => r.approved !== true && r.approved !== 'true');
+            } else if (currentFilter === 'approved') {
+                filtered = data.filter(r => r.approved === true || r.approved === 'true');
+            } else {
+                filtered = data;
+            }
+            
+            if (filtered.length === 0) {
+                let msg = currentFilter === 'pending' ? 'No pending reviews found' : 
+                         (currentFilter === 'approved' ? 'No approved reviews found' : 'No reviews found');
+                document.getElementById('reviewsList').innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i>${msg}</div>`;
+                return;
+            }
+            
+            const reviewsHtml = filtered.map(review => {
+                const reviewId = review.id;
+                const productCatNo = review.product_catno || 'N/A';
+                const reviewerName = review.name || 'Anonymous';
+                const rating = review.stars || 0;
+                const reviewText = review.review_text || 'No review text provided';
+                const isApproved = review.approved === true || review.approved === 'true';
+                const createdAt = review.created_at;
+                
+                return `
+                    <div class="review-item ${isApproved ? 'approved' : 'pending'}" data-review-id="${reviewId}">
+                        <div class="review-header">
+                            <div class="reviewer-info">
+                                <h4><i class="fas fa-user"></i> ${escapeHtml(reviewerName)}</h4>
+                                <div class="review-meta">
+                                    <i class="fas fa-calendar"></i> ${formatDate(createdAt)} • 
+                                    <i class="fas fa-tag"></i> Product: ${escapeHtml(productCatNo)}
+                                </div>
+                            </div>
+                            <div class="review-stars">${'★'.repeat(rating)}${'☆'.repeat(5 - rating)}</div>
+                        </div>
+                        <div class="review-text"><i class="fas fa-quote-left"></i> ${escapeHtml(reviewText)}</div>
+                        <div class="review-actions">
+                            ${!isApproved ? `<button class="btn-approve" data-review-id="${reviewId}"><i class="fas fa-check"></i> Approve</button>` : `<span class="approved-badge"><i class="fas fa-check-circle"></i> Approved</span>`}
+                            <button class="btn-delete" data-review-id="${reviewId}"><i class="fas fa-trash"></i> Delete</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('reviewsList').innerHTML = reviewsHtml;
+            
+            document.querySelectorAll('.btn-approve').forEach(btn => {
+                btn.onclick = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const reviewId = btn.getAttribute('data-review-id');
+                    approveReview(reviewId);
+                };
+            });
+            
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.onclick = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const reviewId = btn.getAttribute('data-review-id');
+                    deleteReview(reviewId);
+                };
+            });
+        } catch(e) {
+            log('Reviews compilation error: ' + e.message);
+            document.getElementById('reviewsList').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i>Error loading reviews: ${escapeHtml(e.message)}</div>`;
+        }
+    }
+    
+    async function approveReview(reviewId) {
+        try {
+            const { error } = await supabase
+                .from('reviews')
+                .update({ approved: true })
+                .eq('id', reviewId);
+            
+            if (error) throw error;
+            showNotification(`✅ Review #${reviewId} approved successfully!`);
+            await loadStats();
+            await loadReviews();
+        } catch(e) {
+            showNotification(`❌ Approve failed: ${e.message}`, true);
+        }
+    }
+    
+    async function deleteReview(reviewId) {
+        if (!confirm('⚠️ Permanently delete this review? This action cannot be undone.')) return;
+        try {
+            const { error } = await supabase
+                .from('reviews')
+                .delete()
+                .eq('id', reviewId);
+            
+            if (error) throw error;
+            showNotification('🗑️ Review deleted permanently.');
+            await loadStats();
+            await loadReviews();
+        } catch(e) {
+            showNotification(`Delete failed: ${e.message}`, true);
+        }
+    }
+    
+    // ======================= VISITOR TRACKING - FIXED =======================
+    async function loadVisitors() {
+        try {
+            // Get visitors from last 2 minutes (more reliable)
+            const twoMinutesAgo = new Date(Date.now() - 120000).toISOString();
+            const { data, error } = await supabase
+                .from('visitors')
+                .select('*')
+                .gt('last_seen', twoMinutesAgo)
+                .order('last_seen', { ascending: false });
+            
+            if (error) {
+                console.error('Visitors query error:', error);
+                throw error;
+            }
+            
+            const count = data ? data.length : 0;
+            document.getElementById('onlineCount').innerHTML = `<i class="fas fa-circle"></i> ${count} Online`;
+            
+            const container = document.getElementById('visitorsList');
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-user-friends"></i>No active visitors right now.<br><small>Make sure RLS policy allows SELECT on visitors table</small></div>';
+                return;
+            }
+            
+            container.innerHTML = data.map(visitor => `
+                <div class="visitor-card">
+                    <div class="visitor-ip">
+                        <span class="online-dot"></span>
+                        <i class="fas fa-network-wired"></i> ${escapeHtml(visitor.ip_address || 'Unknown IP')}
+                    </div>
+                    <div class="visitor-page">
+                        <i class="fas fa-file-alt"></i> Page: ${escapeHtml(visitor.page || 'Unknown')}
+                    </div>
+                    <div class="visitor-time">
+                        <i class="fas fa-clock"></i> Last seen: ${formatTime(visitor.last_seen)}
+                    </div>
+                    <div class="visitor-time">
+                        <i class="fas fa-id-card"></i> ID: ${escapeHtml(visitor.id ? visitor.id.substring(0, 20) + '...' : 'N/A')}
+                    </div>
+                </div>
+            `).join('');
+            
+            log(`Loaded ${count} active visitors`);
+        } catch(e) { 
+            log('Visitors error: ' + e.message);
+            document.getElementById('visitorsList').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i>Error loading visitors: ${escapeHtml(e.message)}</div>`;
+        }
+    }
+    
+    // Track admin session separately
+    async function trackAdminSession() {
+        try {
+            if (!adminVisitorId) {
+                adminVisitorId = localStorage.getItem('admin_visitor_id');
+                if (!adminVisitorId) {
+                    adminVisitorId = 'admin_' + Date.now() + '_' + Math.random().toString(36).substring(2, 12);
+                    localStorage.setItem('admin_visitor_id', adminVisitorId);
+                }
+            }
+            
+            let ip = 'Unknown';
+            try {
+                const res = await fetch('https://api.ipify.org?format=json');
+                const ipData = await res.json();
+                ip = ipData.ip;
+            } catch(e) {}
+            
+            // Try to insert/update admin visitor
+            const { error } = await supabase.from('visitors').upsert({
+                id: adminVisitorId,
+                ip_address: ip,
+                page: 'Admin Dashboard',
+                user_agent: navigator.userAgent.substring(0, 200),
+                last_seen: new Date().toISOString(),
+                status: 'online'
+            }, { onConflict: 'id' });
+            
+            if (error) {
+                console.error('Admin tracking error:', error);
+                showNotification('Visitor tracking may need RLS configuration', true);
+            }
+            
+            // Heartbeat to keep admin session alive
+            const heartbeat = setInterval(async () => {
+                if (isLoggedIn) {
+                    await supabase.from('visitors').update({ 
+                        last_seen: new Date().toISOString(),
+                        page: 'Admin Dashboard'
+                    }).eq('id', adminVisitorId);
+                } else {
+                    clearInterval(heartbeat);
+                }
+            }, 28000);
+            
+            // Clean up stale visitors
+            setInterval(async () => {
+                if (isLoggedIn) {
+                    const expireTime = new Date(Date.now() - 120000).toISOString();
+                    await supabase.from('visitors').delete().lt('last_seen', expireTime);
+                    loadVisitors();
+                }
+            }, 60000);
+        } catch(e) { log('Track admin error: ' + e.message); }
+    }
+    
+    function setupRealtime() {
+        if (!supabase || realtimeSubscribed) return;
+        try {
+            supabase.channel('admin-reviews-track')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'reviews' }, () => {
+                    log('Realtime change detected: reviews');
+                    loadStats();
+                    loadReviews();
+                })
+                .subscribe();
+            supabase.channel('admin-visitors-track')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'visitors' }, () => {
+                    loadVisitors();
+                })
+                .subscribe();
+            realtimeSubscribed = true;
+            log('Realtime subscriptions active');
+        } catch(e) {
+            log('Realtime setup error: ' + e.message);
+        }
+    }
+    
+    function startAutoRefresh() {
+        if (refreshInterval) clearInterval(refreshInterval);
+        refreshInterval = setInterval(() => {
+            if (isLoggedIn) {
+                loadStats();
+                loadReviews();
+                loadVisitors();
+            }
+        }, 10000);
+    }
+    
+    function setupFilters() {
+        const filterBtns = document.querySelectorAll('.filter-tab');
+        filterBtns.forEach(btn => {
+            btn.onclick = function() {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.getAttribute('data-filter');
+                log(`Filter changed to: ${currentFilter}`);
+                loadReviews();
+            };
+        });
+        document.getElementById('refreshBtn').onclick = () => {
+            loadStats();
+            loadReviews();
+            loadVisitors();
+            showNotification('Data refreshed');
+        };
+    }
+    
+    function saveSession() {
+        localStorage.setItem('admin_session', 'true');
+        localStorage.setItem('admin_session_time', Date.now().toString());
+    }
+    function clearSession() {
+        localStorage.removeItem('admin_session');
+        localStorage.removeItem('admin_session_time');
+        if (refreshInterval) clearInterval(refreshInterval);
+    }
+    function checkSession() {
+        const saved = localStorage.getItem('admin_session');
+        const sessionTime = localStorage.getItem('admin_session_time');
+        if (saved === 'true' && sessionTime) {
+            const hoursSince = (Date.now() - parseInt(sessionTime)) / (1000 * 60 * 60);
+            if (hoursSince < 24) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    async function performLogin(password) {
+        if (password === ADMIN_PASSWORD) {
+            isLoggedIn = true;
+            saveSession();
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('dashboardContainer').style.display = 'block';
+            if (initSupabase()) {
+                await loadStats();
+                await loadReviews();
+                await loadVisitors();
+                await trackAdminSession();
+                setupRealtime();
+                startAutoRefresh();
+                showNotification('Welcome to HM Peptide Admin');
+            } else {
+                showNotification('Supabase connection failed', true);
+            }
+        } else {
+            const errDiv = document.getElementById('loginError');
+            errDiv.style.display = 'block';
+            setTimeout(() => errDiv.style.display = 'none', 2500);
+        }
+    }
+    
+    function setupLoginUI() {
+        const loginBtn = document.getElementById('loginBtn');
+        const pwdInput = document.getElementById('adminPassword');
+        const togglePwd = document.getElementById('togglePassword');
+        togglePwd.onclick = () => {
+            const type = pwdInput.type === 'password' ? 'text' : 'password';
+            pwdInput.type = type;
+            togglePwd.classList.toggle('fa-eye');
+            togglePwd.classList.toggle('fa-eye-slash');
+        };
+        const doLogin = () => performLogin(pwdInput.value);
+        loginBtn.onclick = doLogin;
+        pwdInput.onkeypress = (e) => { if(e.key === 'Enter') doLogin(); };
+    }
+    
+    function setupLogout() {
+        document.getElementById('logoutBtn').onclick = () => {
+            isLoggedIn = false;
+            clearSession();
+            document.getElementById('loginContainer').style.display = 'flex';
+            document.getElementById('dashboardContainer').style.display = 'none';
+            document.getElementById('adminPassword').value = '';
+            if (refreshInterval) clearInterval(refreshInterval);
+            showNotification('Logged out');
+        };
+    }
+    
+    function init() {
+        log('Initializing Admin Dashboard');
+        setupLoginUI();
+        setupFilters();
+        setupLogout();
+        if (checkSession()) {
+            performLogin(ADMIN_PASSWORD);
+        }
+    }
+    
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+})();
+</script>
+</body>
+</html>

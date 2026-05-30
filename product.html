@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HM Peptide – Products</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  /* ─── CSS VARIABLES ─────────────────────────────────────── */
+  :root {
+    --teal:       #00b4a6;
+    --teal-dark:  #008f84;
+    --teal-light: #e0f7f5;
+    --navy:       #1a2b3c;
+    --gray-100:   #f5f7f9;
+    --gray-200:   #e8ecef;
+    --gray-400:   #9aa5b1;
+    --gray-700:   #4a5568;
+    --white:      #ffffff;
+    --accent:     #ff6b35;
+    --font-head:  'Outfit', sans-serif;
+    --font-body:  'DM Sans', sans-serif;
+    --shadow-sm:  0 2px 8px rgba(0,0,0,0.07);
+    --shadow-md:  0 6px 24px rgba(0,0,0,0.10);
+    --shadow-lg:  0 12px 40px rgba(0,0,0,0.14);
+    --radius:     14px;
+    --transition: 0.22s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* ─── RESET ─────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-body);
+    background: var(--gray-100);
+    color: var(--navy);
+    min-height: 100vh;
+  }
+  a { text-decoration: none; color: inherit; }
+  img { display: block; max-width: 100%; }
+
+  /* ─── TOP ANNOUNCEMENT BAR ───────────────────────────────── */
+  .topbar {
+    background: var(--navy);
+    color: rgba(255,255,255,0.85);
+    text-align: center;
+    font-size: 12.5px;
+    letter-spacing: 0.03em;
+    padding: 8px 20px;
+    font-family: var(--font-head);
+  }
+  .topbar span { color: var(--teal); font-weight: 600; }
+
+  /* HEADER - FIXED NAVBAR */
+  header {
+    background: var(--white);
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    height: 72px;
+    position: relative;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--navy);
+    cursor: pointer;
+    z-index: 101;
+  }
+
+  .logo-text em {
+    color: var(--teal);
+    font-style: normal;
+  }
+
+  /* NAVIGATION - DESKTOP */
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  nav a {
+    font-family: var(--font-head);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gray-700);
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: color var(--transition), background var(--transition);
+    text-decoration: none;
+  }
+
+  nav a:hover {
+    color: var(--teal);
+    background: var(--teal-light);
+  }
+
+  nav a.active {
+    color: var(--teal);
+    background: var(--teal-light);
+    position: relative;
+  }
+
+  nav a.active::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+    width: 24px;
+    height: 2.5px;
+    background: var(--teal);
+    border-radius: 2px;
+  }
+
+  .nav-contact {
+    background: var(--teal) !important;
+    color: white !important;
+    border-radius: 8px;
+    font-weight: 600 !important;
+  }
+
+  .nav-contact:hover {
+    background: var(--teal-dark) !important;
+  }
+
+  /* HAMBURGER MENU BUTTON */
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 8px;
+    z-index: 101;
+    background: transparent;
+    border: none;
+  }
+
+  .hamburger span {
+    display: block;
+    width: 25px;
+    height: 2.5px;
+    background: var(--navy);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+
+  /* Mobile Navigation - FIXED */
+  @media (max-width: 820px) {
+    .header-inner {
+      padding: 0 20px;
+    }
+    
+    .hamburger {
+      display: flex;
+    }
+    
+    nav {
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 280px;
+      height: 100vh;
+      background: var(--white);
+      padding: 80px 24px 30px;
+      box-shadow: -5px 0 30px rgba(0,0,0,0.15);
+      gap: 8px;
+      z-index: 100;
+      transition: right 0.3s ease;
+      overflow-y: auto;
+    }
+    
+    nav.open {
+      right: 0;
+    }
+    
+    nav a {
+      width: 100%;
+      text-align: left;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 16px;
+    }
+    
+    nav a.active::after {
+      display: none;
+    }
+    
+    nav a.nav-contact {
+      margin-top: 10px;
+      text-align: center;
+    }
+    
+    /* Overlay when menu is open */
+    .menu-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 99;
+    }
+    
+    .menu-overlay.active {
+      display: block;
+    }
+    
+    /* Hamburger animation when open */
+    .hamburger.open span:nth-child(1) {
+      transform: rotate(45deg) translate(6px, 6px);
+    }
+    
+    .hamburger.open span:nth-child(2) {
+      opacity: 0;
+    }
+    
+    .hamburger.open span:nth-child(3) {
+      transform: rotate(-45deg) translate(6px, -6px);
+    }
+  }
+
+  /* ─── PAGE HERO ──────────────────────────────────────────── */
+  .page-hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #0d3b4f 60%, var(--teal-dark) 100%);
+    color: white;
+    padding: 56px 32px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .page-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 70% 50%, rgba(0,180,166,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .page-hero h1 {
+    font-family: var(--font-head);
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+  .page-hero h1 span { color: var(--teal); }
+  .page-hero p {
+    font-size: 15px;
+    opacity: 0.75;
+    max-width: 540px;
+    margin: 0 auto 24px;
+    line-height: 1.65;
+  }
+  .badge-row {
+    display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  }
+  .badge {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-family: var(--font-head);
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.9);
+    letter-spacing: 0.03em;
+  }
+  .badge.green { background: rgba(0,180,166,0.25); border-color: var(--teal); color: var(--teal); }
+
+  /* ─── FILTER BAR ─────────────────────────────────────────── */
+  .filter-bar {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 28px 32px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .filter-label {
+    font-family: var(--font-head);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-400);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-right: 4px;
+  }
+  .filter-btn {
+    padding: 7px 18px;
+    border-radius: 100px;
+    border: 1.5px solid var(--gray-200);
+    background: white;
+    font-family: var(--font-head);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-700);
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+  .filter-btn:hover { border-color: var(--teal); color: var(--teal); }
+  .filter-btn.active {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: white;
+  }
+
+  /* ─── PRODUCT GRID WRAPPER ───────────────────────────────── */
+  .products-section {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 28px 32px 20px;
+  }
+  .results-info {
+    font-size: 13px;
+    color: var(--gray-400);
+    margin-bottom: 20px;
+    font-family: var(--font-head);
+  }
+  .results-info strong { color: var(--navy); }
+
+  /* ─── PRODUCT GRID ───────────────────────────────────────── */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
+  }
+
+  /* ─── PRODUCT CARD ───────────────────────────────────────── */
+  .product-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1.5px solid var(--gray-200);
+    cursor: pointer;
+    transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    display: flex;
+    flex-direction: column;
+  }
+  .product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--teal);
+  }
+
+  .card-img {
+    position: relative;
+    background: white;
+    padding: 28px 20px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    overflow: hidden;
+  }
+
+  .card-label-tag {
+    position: absolute;
+    top: 14px; left: 14px;
+    background: var(--teal);
+    color: white;
+    font-family: var(--font-head);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 3px 9px;
+    border-radius: 100px;
+    text-transform: uppercase;
+  }
+
+  .card-body {
+    padding: 16px 18px 18px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .card-catno {
+    font-family: var(--font-head);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--teal);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .card-name {
+    font-family: var(--font-head);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.3;
+  }
+  .card-spec {
+    font-size: 12px;
+    color: var(--gray-400);
+    font-family: var(--font-head);
+    font-weight: 400;
+  }
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid var(--gray-200);
+  }
+  .card-price {
+    font-family: var(--font-head);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--teal-dark);
+  }
+  .card-price sup {
+    font-size: 12px;
+    font-weight: 600;
+    vertical-align: super;
+  }
+  .card-btn {
+    background: var(--navy);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-family: var(--font-head);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background var(--transition);
+    letter-spacing: 0.02em;
+  }
+  .card-btn:hover { background: var(--teal); }
+
+  .purity-tag {
+    display: flex; gap: 6px; margin-top: 2px;
+  }
+  .ptag {
+    font-size: 10px;
+    font-family: var(--font-head);
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .ptag.purity { background: #e0f7f5; color: var(--teal-dark); }
+  .ptag.research { background: #fef3ed; color: #c44b0e; }
+
+  .card-stars { display: flex; align-items: center; gap: 5px; margin-top: 2px; }
+  .stars-display { color: #f5a623; font-size: 13px; letter-spacing: 1px; }
+  .stars-count { font-family: var(--font-head); font-size: 11px; color: var(--gray-400); }
+
+  /* ─── PAGINATION ─────────────────────────────────────────── */
+  .pagination-wrap {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 32px 32px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .page-btn {
+    font-family: var(--font-head);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 9px 16px;
+    border-radius: 9px;
+    border: 1.5px solid var(--gray-200);
+    background: white;
+    color: var(--gray-700);
+    cursor: pointer;
+    transition: all var(--transition);
+    min-width: 42px;
+    text-align: center;
+  }
+  .page-btn:hover:not(:disabled) {
+    border-color: var(--teal);
+    color: var(--teal);
+    background: var(--teal-light);
+  }
+  .page-btn.active {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: white;
+  }
+  .page-btn:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+  }
+  .page-btn.prev-next {
+    padding: 9px 20px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* ─── FLOATING SIDE CONTACT BUTTONS ─────────────────────── */
+  .side-contact {
+    position: fixed;
+    right: 0; top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    z-index: 200;
+    gap: 2px;
+  }
+  .side-btn {
+    width: 48px; height: 48px;
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 20px;
+    transition: background var(--transition), color var(--transition);
+    color: var(--gray-700);
+    text-decoration: none;
+  }
+  .side-btn:hover { background: var(--teal); color: white; transform: translateX(-4px); }
+  .side-btn:first-child { border-radius: 10px 0 0 0; }
+  .side-btn:last-child { border-radius: 0 0 0 10px; }
+
+  .back-to-top {
+    width: 48px; height: 48px;
+    background: var(--navy);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: white;
+    font-size: 18px;
+    transition: all var(--transition);
+  }
+  .back-to-top:hover { background: var(--teal); transform: translateX(-4px); }
+
+  /* Tooltip for side buttons */
+  .side-btn {
+    position: relative;
+  }
+
+  .side-btn::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    right: 60px;
+    background: var(--navy);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: var(--font-body);
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+
+  .side-btn:hover::before {
+    opacity: 1;
+    visibility: visible;
+    right: 55px;
+  }
+
+  /* Responsive sidebar - always visible, just smaller */
+  @media (max-width: 1024px) {
+    .side-contact { right: 8px; }
+    .side-btn, .back-to-top { width: 42px; height: 42px; font-size: 18px; }
+  }
+
+  @media (max-width: 768px) {
+    .side-contact { right: 5px; }
+    .side-btn, .back-to-top { width: 38px; height: 38px; font-size: 16px; }
+  }
+
+  @media (max-width: 480px) {
+    .side-contact { right: 5px; }
+    .side-btn, .back-to-top { width: 35px; height: 35px; font-size: 14px; }
+  }
+
+  /* CTA SECTION STYLES */
+  .cta-section {
+    background: var(--white);
+    text-align: center;
+    padding: 60px 20px 80px;
+    border-top: 1px solid #eee;
+    margin-top: 48px;
+  }
+
+  .cta-section h2 {
+    font-family: var(--font-head);
+    font-size: clamp(1.2rem, 5vw, 1.9rem);
+    font-weight: 700;
+    color: var(--navy);
+    max-width: 500px;
+    margin: 0 auto 10px;
+    line-height: 1.3;
+    padding: 0 10px;
+  }
+
+  .cta-section p {
+    color: #888;
+    font-size: clamp(0.8rem, 3vw, 0.9rem);
+    margin-bottom: 30px;
+    padding: 0 15px;
+  }
+
+  .email-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 480px;
+    width: 90%;
+    margin: 0 auto;
+    border: 1px solid #aaa;
+    border-radius: 48px;
+    overflow: hidden;
+    background: white;
+  }
+
+  .email-row input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 0.9rem;
+    padding: 14px 20px;
+    font-family: var(--font-body);
+    color: var(--gray-700);
+    background: transparent;
+    min-width: 0;
+  }
+
+  .email-row input::placeholder {
+    color: #aaa;
+    font-size: 0.85rem;
+  }
+
+  .arrow-btn {
+    background: var(--teal);
+    border: none;
+    font-size: 1.3rem;
+    cursor: pointer;
+    color: white;
+    padding: 0 24px;
+    transition: background 0.2s;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .arrow-btn:hover {
+    background: var(--teal-dark);
+  }
+
+  @media (max-width: 768px) {
+    .cta-section {
+      padding: 40px 16px 60px;
+    }
+    
+    .email-row {
+      width: 95%;
+      max-width: 400px;
+    }
+    
+    .email-row input {
+      padding: 12px 16px;
+      font-size: 0.85rem;
+    }
+    
+    .arrow-btn {
+      padding: 0 18px;
+      font-size: 1.2rem;
+      min-height: 44px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .email-row {
+      width: 100%;
+      border-radius: 40px;
+    }
+    
+    .email-row input {
+      padding: 10px 14px;
+      font-size: 0.8rem;
+    }
+    
+    .arrow-btn {
+      padding: 0 14px;
+      font-size: 1.1rem;
+      min-height: 42px;
+    }
+  }
+
+  /* FOOTER STYLES */
+  .footer {
+    background: #1a1a1a;
+    color: #ccc;
+    padding: 50px 80px 30px;
+    margin-top: 0;
+  }
+
+  .footer-cols {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+    margin-bottom: 40px;
+  }
+
+  .footer-col h4 {
+    color: var(--white);
+    font-size: 0.8rem;
+    letter-spacing: 0.14em;
+    margin-bottom: 18px;
+    font-weight: 600;
+  }
+
+  .footer-col p,
+  .footer-col a {
+    display: block;
+    font-size: 0.82rem;
+    color: #aaa;
+    line-height: 2;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-col a:hover {
+    color: var(--teal);
+  }
+
+  .footer-col img {
+    width: 150px;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .footer-bottom {
+    border-top: 1px solid #333;
+    padding-top: 20px;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #666;
+    line-height: 2;
+  }
+
+  @media (max-width: 768px) {
+    .footer {
+      padding: 40px 24px 24px;
+    }
+    .footer-cols {
+      grid-template-columns: 1fr;
+      gap: 24px;
+      text-align: center;
+    }
+  }
+
+  /* ─── RESPONSIVE GRID ─────────────────────────────────────────── */
+  @media (max-width: 1100px) {
+    .product-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 820px) {
+    .product-grid { grid-template-columns: repeat(2, 1fr); }
+    .filter-bar { padding: 20px 20px 0; }
+    .products-section { padding: 20px 20px 12px; }
+    .pagination-wrap { padding: 24px 20px 36px; }
+    .page-hero { padding: 40px 20px 32px; }
+  }
+  @media (max-width: 520px) {
+    .product-grid { grid-template-columns: 1fr; gap: 16px; }
+    .card-img { min-height: 160px; }
+    .filter-bar { justify-content: center; }
+    .filter-btn { padding: 5px 14px; font-size: 12px; }
+  }
+
+  /* ─── MODAL ──────────────────────────────────────────────── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(10,20,35,0.6);
+    backdrop-filter: blur(4px);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 20px;
+    max-width: 520px;
+    width: 100%;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    animation: modalIn .25s cubic-bezier(.4,0,.2,1);
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.93) translateY(16px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .modal-header {
+    background: linear-gradient(135deg, var(--navy), #0d3b4f);
+    padding: 28px 28px 22px;
+    color: white;
+    position: relative;
+  }
+  .modal-header h2 { font-family: var(--font-head); font-size: 20px; font-weight: 700; }
+  .modal-header p  { font-size: 13px; opacity: 0.65; margin-top: 4px; }
+  .modal-close {
+    position: absolute; top: 20px; right: 20px;
+    background: rgba(255,255,255,0.12);
+    border: none; color: white;
+    width: 32px; height: 32px;
+    border-radius: 50%; font-size: 16px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background var(--transition);
+  }
+  .modal-close:hover { background: rgba(255,255,255,0.25); }
+  .modal-body { padding: 24px 28px 28px; }
+  .modal-img-area {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    min-height: 160px;
+  }
+  .modal-details { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .detail-item label {
+    display: block;
+    font-size: 10px;
+    font-family: var(--font-head);
+    font-weight: 700;
+    color: var(--gray-400);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .detail-item span {
+    font-family: var(--font-head);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+  .detail-item.price-big span {
+    font-size: 24px;
+    color: var(--teal-dark);
+  }
+  .modal-actions { display: flex; gap: 10px; }
+  .btn-primary {
+    flex: 1;
+    background: var(--teal);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 20px;
+    font-family: var(--font-head);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background var(--transition);
+  }
+  .btn-primary:hover { background: var(--teal-dark); }
+  .btn-secondary {
+    flex: 1;
+    background: var(--gray-100);
+    color: var(--navy);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 13px 20px;
+    font-family: var(--font-head);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+  .btn-secondary:hover { border-color: var(--teal); color: var(--teal); }
+  @media (max-width: 768px) {
+  .footer-cols {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    text-align: center;
+  }
+  
+  /* This is the key fix - center the image in the footer */
+  .footer-col img {
+    margin: 0 auto;
+    display: block;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  Factory-direct pricing · 99%+ purity · <span>Free shipping over $500</span> · WhatsApp: +852 9315 7951
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="logo" onclick="window.location.href='index.html'">
+      <img src="assets/logo.png" alt="HM Peptide" style="height: 40px; width: auto;">
+      <div class="logo-text"><span style="color: #00b4a6;">HM</span><em style="color: #1a2b3c;">peptide</em></div>
+    </div>
+    <nav id="mainNav">
+      <a href="index.html">Home</a>
+      <a href="contact.html">Contact us</a>
+      <a href="about.html">About</a>
+      <a href="hmpeptide-sales.html">Sale</a>
+       <a href="reviews.html">Reviews</a>
+      <a href="product.html" class="active">Products</a>
+      <a href="https://wa.me/85293157951" target="_blank" class="nav-contact">WhatsApp Us</a>
+    </nav>
+    <div class="hamburger" id="hamburger" onclick="toggleNav()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+  <!-- Overlay for mobile menu -->
+  <div class="menu-overlay" id="menuOverlay" onclick="toggleNav()"></div>
+</header>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <h1>Our <span>Product Catalog</span></h1>
+  <p>Factory-direct peptides with verified 99%+ purity. Janoshik-tested, discreet worldwide shipping.</p>
+  <div class="badge-row">
+    <div class="badge green">✓ 99%+ Purity</div>
+    <div class="badge">Research Use Only</div>
+    <div class="badge">10 vials / kit</div>
+    <div class="badge">Bulk Discounts</div>
+  </div>
+</section>
+
+<!-- FILTER BAR -->
+<div class="filter-bar" id="filterBar">
+  <span class="filter-label">Filter:</span>
+  <button class="filter-btn active" onclick="setFilter('all', this)">All Products</button>
+  <button class="filter-btn" onclick="setFilter('glp1', this)">GLP-1 / Weight Loss</button>
+  <button class="filter-btn" onclick="setFilter('growth', this)">Growth / HGH</button>
+  <button class="filter-btn" onclick="setFilter('healing', this)">Healing / Recovery</button>
+  <button class="filter-btn" onclick="setFilter('other', this)">Other</button>
+</div>
+
+<!-- PRODUCT SECTION -->
+<section class="products-section">
+  <div class="results-info" id="resultsInfo"></div>
+  <div class="product-grid" id="productGrid"></div>
+</section>
+
+<!-- PAGINATION -->
+<div class="pagination-wrap" id="paginationWrap"></div>
+
+<!-- Floating Sidebar with Icons -->
+<div class="side-contact">
+  <a href="tel:+85293157951" class="side-btn" data-tooltip="Call Us">
+    <i class="fas fa-phone-alt"></i>
+  </a>
+  <a href="mailto:hmcamlpeptides@gmail.com" class="side-btn" data-tooltip="Email Us">
+    <i class="fas fa-envelope"></i>
+  </a>
+  <a href="https://wa.link/rjc3kb" class="side-btn" data-tooltip="WhatsApp" target="_blank">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+  <div class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" data-tooltip="Back to Top">
+    <i class="fas fa-arrow-up"></i>
+  </div>
+</div>
+
+<!-- PRODUCT DETAIL MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOnOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <h2 id="modalName">Product Name</h2>
+      <p id="modalCatNo">Cat. No. –</p>
+    </div>
+    <div class="modal-body">
+      <div class="modal-img-area">
+        <img id="modalImg" src="" alt="" style="max-height:180px;object-fit:contain;" />
+      </div>
+      <div class="modal-details">
+        <div class="detail-item price-big">
+          <label>Price</label>
+          <span id="modalPrice">$0</span>
+        </div>
+        <div class="detail-item">
+          <label>Specification</label>
+          <span id="modalSpec">–</span>
+        </div>
+        <div class="detail-item">
+          <label>CAS Number</label>
+          <span id="modalCas">–</span>
+        </div>
+        <div class="detail-item">
+          <label>Purity</label>
+          <span>99%+</span>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-primary" onclick="inquireProduct()">Inquire on WhatsApp</button>
+        <button class="btn-secondary" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA SECTION -->
+<section class="cta-section">
+  <h2>Add whatsapp to get November price lists</h2>
+  <p>Janoshik test report are available now!</p>
+  <div class="email-row">
+    <input type="email" placeholder="Enter your e-mail address" id="newsEmail" />
+    <button class="arrow-btn" id="subscribeBtn">→</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-cols">
+    <div class="footer-col">
+      <h4>CONTACT US</h4>
+      <p>HM PEPTIDE</p>
+      <p>Whatsapp: +852 9315 7951</p>
+      <p>Email: hmcamlpeptides@gmail.com</p>
+    </div>
+    <div class="footer-col">
+      <h4>FAQ &amp; HELP</h4>
+     <a href="privacy.html" >Privacy Policy</a>
+      <a href="#">PAYMENT METHODS</a>
+      <a href="#">FAQ</a>
+    </div>
+    <div class="footer-col">
+      <h4>OVERVIEW</h4>
+      <a href="#">PAYMENT METHODS</a>
+     <a href="privacy.html" >Privacy Policy</a>
+      <a href="#">Location &amp; Working Hours</a>
+    </div>
+    <div class="footer-col">
+      <h4>CONTACT</h4>
+      <img src="assets/RQR.png" width="100" height="100" alt="Payment methods">
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>Copyright @ 2023 . All rights reserved lamps</p>
+    <p>关于我们 | 经典案例 | 新闻动态 | 服务理由 | 咨询团队 | 联系我们</p>
+    <p>Copyright © 2026 . All rights reserved.</p>
+    <p>河北旺盛卫生用品有限公司</p>
+  </div>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   VISITOR TRACKING - UPDATED FOR CORRECT SCHEMA
+   ═══════════════════════════════════════════════════════════ */
+(async function() {
+    const SUPABASE_URL = 'https://jhuwtkhztehhhifetqgb.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_RRDIuWw0eo26aKCHZGRKyQ_BFotKqyV';
+    
+    console.log('🔵 [Products Page Tracker] Starting visitor tracking...');
+    
+    try {
+        // Create Supabase client
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Get or create unique visitor ID
+        let visitorId = localStorage.getItem('hm_visitor_id');
+        if (!visitorId) {
+            visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substring(2);
+            localStorage.setItem('hm_visitor_id', visitorId);
+            console.log('🆕 [Products Page] New visitor created:', visitorId);
+        } else {
+            console.log('🔁 [Products Page] Returning visitor:', visitorId);
+        }
+        
+        // Get IP address
+        let ip = 'Unknown';
+        try {
+            const ipRes = await fetch('https://api.ipify.org?format=json');
+            const ipData = await ipRes.json();
+            ip = ipData.ip;
+            console.log('🌐 [Products Page] Got IP:', ip);
+        } catch(e) {
+            console.log('⚠️ [Products Page] Could not get IP (using fallback)');
+        }
+        
+        // Get current page
+        const currentPage = window.location.pathname.split('/').pop() || 'product.html';
+        
+        // Prepare visitor data - ONLY columns that exist in your table
+        const visitorData = {
+            id: visitorId,
+            ip_address: ip,
+            page: currentPage,
+            user_agent: navigator.userAgent.substring(0, 300),
+            last_seen: new Date().toISOString(),
+            status: 'online'
+        };
+        
+        console.log('📝 [Products Page] Saving visitor data:', visitorData);
+        
+        // Try to upsert visitor
+        const { data, error } = await supabase
+            .from('visitors')
+            .upsert(visitorData, { onConflict: 'id' });
+        
+        if (error) {
+            console.error('❌ [Products Page] ERROR writing to Supabase:', error);
+            console.error('❌ [Products Page] Error details:', error.message);
+        } else {
+            console.log('✅ [Products Page] SUCCESS! Visitor saved to database!');
+            console.log('✅ [Products Page] You should now see this visitor in the admin dashboard!');
+        }
+        
+        // Set up heartbeat every 30 seconds to keep visitor online
+        setInterval(async () => {
+            try {
+                const newPage = window.location.pathname.split('/').pop() || 'product.html';
+                const { error: updateError } = await supabase
+                    .from('visitors')
+                    .update({ 
+                        last_seen: new Date().toISOString(),
+                        page: newPage,
+                        status: 'online'
+                    })
+                    .eq('id', visitorId);
+                
+                if (updateError) {
+                    console.log('⚠️ [Products Page] Heartbeat error:', updateError.message);
+                } else {
+                    console.log('💓 [Products Page] Heartbeat sent for products page');
+                }
+            } catch(e) {
+                console.log('⚠️ [Products Page] Heartbeat failed:', e);
+            }
+        }, 30000);
+        
+    } catch(e) {
+        console.error('💥 [Products Page] Fatal error:', e);
+    }
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   PRODUCT DATA — extracted from Product_Price_List.xlsx
+   Categories: glp1 | growth | healing | other
+   ═══════════════════════════════════════════════════════════ */
+const ALL_PRODUCTS = [
+  /* ── GLP-1 / Weight Loss ── */
+  { catNo:'SM02',  name:'Semaglutide',                spec:'2 mg/vial, 10 vials/kit',   price:45,  cas:'910463-68-2',   cat:'glp1'    },
+  { catNo:'SM05',  name:'Semaglutide',                spec:'5 mg/vial, 10 vials/kit',   price:50,  cas:'910463-68-2',   cat:'glp1'    },
+  { catNo:'SM10',  name:'Semaglutide',                spec:'10 mg/vial, 10 vials/kit',  price:65,  cas:'910463-68-2',   cat:'glp1'    },
+  { catNo:'SM15',  name:'Semaglutide',                spec:'15 mg/vial, 10 vials/kit',  price:80,  cas:'910463-68-2',   cat:'glp1'    },
+  { catNo:'SM20',  name:'Semaglutide',                spec:'20 mg/vial, 10 vials/kit',  price:90,  cas:'910463-68-2',   cat:'glp1'    },
+  { catNo:'SM30',  name:'Semaglutide',                spec:'30 mg/vial, 10 vials/kit',  price:100, cas:'910463-68-2',   cat:'glp1'    },
+  { catNo:'TR5',   name:'Tirzepatide',                spec:'5 mg/vial, 10 vials/kit',   price:50,  cas:'2023788-19-2',  cat:'glp1'    },
+  { catNo:'TR10',  name:'Tirzepatide',                spec:'10 mg/vial, 10 vials/kit',  price:70,  cas:'2023788-19-2',  cat:'glp1'    },
+  { catNo:'TR15',  name:'Tirzepatide',                spec:'15 mg/vial, 10 vials/kit',  price:75,  cas:'2023788-19-2',  cat:'glp1'    },
+  { catNo:'TR20',  name:'Tirzepatide',                spec:'20 mg/vial, 10 vials/kit',  price:95,  cas:'2023788-19-2',  cat:'glp1'    },
+  { catNo:'TR30',  name:'Tirzepatide',                spec:'30 mg/vial, 10 vials/kit',  price:120, cas:'2023788-19-2',  cat:'glp1'    },
+  { catNo:'TR40',  name:'Tirzepatide',                spec:'40 mg/vial, 10 vials/kit',  price:130, cas:'2023788-19-2',  cat:'glp1'    },
+  { catNo:'TR50',  name:'Tirzepatide',                spec:'50 mg/vial, 10 vials/kit',  price:150, cas:'2023788-19-2',  cat:'glp1'    },
+  { catNo:'TR60',  name:'Tirzepatide',                spec:'60 mg/vial, 10 vials/kit',  price:170, cas:'2023788-19-2',  cat:'glp1'    },
+  { catNo:'RT5',   name:'Retatrutide',                spec:'5 mg/vial, 10 vials/kit',   price:70,  cas:'2381089-83-2',  cat:'glp1'    },
+  { catNo:'RT10',  name:'Retatrutide',                spec:'10 mg/vial, 10 vials/kit',  price:100, cas:'2381089-83-2',  cat:'glp1'    },
+  { catNo:'RT15',  name:'Retatrutide',                spec:'15 mg/vial, 10 vials/kit',  price:120, cas:'2381089-83-2',  cat:'glp1'    },
+  { catNo:'RT20',  name:'Retatrutide',                spec:'20 mg/vial, 10 vials/kit',  price:150, cas:'2381089-83-2',  cat:'glp1'    },
+  { catNo:'RT30',  name:'Retatrutide',                spec:'30 mg/vial, 10 vials/kit',  price:200, cas:'2381089-83-2',  cat:'glp1'    },
+  { catNo:'RT40',  name:'Retatrutide',                spec:'40 mg/vial, 10 vials/kit',  price:220, cas:'2381089-83-2',  cat:'glp1'    },
+  { catNo:'RT50',  name:'Retatrutide',                spec:'50 mg/vial, 10 vials/kit',  price:240, cas:'2381089-83-2',  cat:'glp1'    },
+  { catNo:'RT60',  name:'Retatrutide',                spec:'60 mg/vial, 10 vials/kit',  price:260, cas:'2381089-83-2',  cat:'glp1'    },
+  { catNo:'CGL5',  name:'Cagrilintide',               spec:'5 mg/vial, 10 vials/kit',   price:110, cas:'1415456-99-3',  cat:'glp1'    },
+  { catNo:'CGL10', name:'Cagrilintide',               spec:'10 mg/vial, 10 vials/kit',  price:160, cas:'1415456-99-3',  cat:'glp1'    },
+  { catNo:'CS5',   name:'Cagrilintide 2.5mg + Semaglutide 2.5mg', spec:'10 mg/vial, 10 vials/kit', price:120, cas:'–', cat:'glp1' },
+  { catNo:'CS10',  name:'Cagrilintide 5mg + Semaglutide 5mg',     spec:'10 mg/vial, 10 vials/kit', price:160, cas:'–', cat:'glp1' },
+  { catNo:'MDT5',  name:'Mazdutide',                  spec:'5 mg/vial, 10 vials/kit',   price:87,  cas:'2259884-03-0',  cat:'glp1'    },
+  { catNo:'MDT10', name:'Mazdutide',                  spec:'10 mg/vial, 10 vials/kit',  price:140, cas:'2259884-03-0',  cat:'glp1'    },
+  { catNo:'SUR10', name:'Survodutide',                spec:'10 mg/vial, 10 vials/kit',  price:280, cas:'2805997-46-8',  cat:'glp1'    },
+  { catNo:'GP',    name:'GLP-1',                      spec:'5 mg/vial, 10 vials/kit',   price:100, cas:'87805-34-3',    cat:'glp1'    },
+  { catNo:'2AD',   name:'AOD-9604',                   spec:'2 mg/vial, 10 vials/kit',   price:50,  cas:'221231-10-3',   cat:'glp1'    },
+  { catNo:'5AD',   name:'AOD-9604',                   spec:'5 mg/vial, 10 vials/kit',   price:100, cas:'221231-10-3',   cat:'glp1'    },
+  /* ── Growth / HGH ── */
+  { catNo:'H06',   name:'HGH 191AA (Somatropin)',     spec:'6 iu × 10 vials',           price:48,  cas:'–',             cat:'growth'  },
+  { catNo:'H08',   name:'HGH 191AA (Somatropin)',     spec:'8 iu × 10 vials',           price:58,  cas:'–',             cat:'growth'  },
+  { catNo:'H10',   name:'HGH 191AA (Somatropin)',     spec:'10 iu × 10 vials',          price:75,  cas:'–',             cat:'growth'  },
+  { catNo:'H12',   name:'HGH 191AA (Somatropin)',     spec:'12 iu × 10 vials',          price:80,  cas:'–',             cat:'growth'  },
+  { catNo:'H15',   name:'HGH 191AA (Somatropin)',     spec:'15 iu × 10 vials',          price:90,  cas:'–',             cat:'growth'  },
+  { catNo:'IP5',   name:'Ipamorelin',                 spec:'5 mg/vial, 10 vials/kit',   price:50,  cas:'–',             cat:'growth'  },
+  { catNo:'IP10',  name:'Ipamorelin',                 spec:'10 mg/vial, 10 vials/kit',  price:80,  cas:'–',             cat:'growth'  },
+  { catNo:'CP10',  name:'CJC-1295 w/o DAC 5mg + IPA 5mg', spec:'10 mg/vial, 10 vials/kit', price:110, cas:'–',         cat:'growth'  },
+  { catNo:'CND5',  name:'CJC-1295 no DAC',            spec:'5 mg/vial, 10 vials/kit',   price:90,  cas:'863288-34-0',   cat:'growth'  },
+  { catNo:'CND10', name:'CJC-1295 no DAC',            spec:'10 mg/vial, 10 vials/kit',  price:135, cas:'863288-34-0',   cat:'growth'  },
+  { catNo:'CD5',   name:'CJC-1295 DAC',               spec:'5 mg/vial, 10 vials/kit',   price:130, cas:'–',             cat:'growth'  },
+  { catNo:'G25',   name:'GHRP-2',                     spec:'5 mg/vial, 10 vials/kit',   price:35,  cas:'158861-67-7',   cat:'growth'  },
+  { catNo:'G210',  name:'GHRP-2',                     spec:'10 mg/vial, 10 vials/kit',  price:48,  cas:'158861-67-7',   cat:'growth'  },
+  { catNo:'G65',   name:'GHRP-6',                     spec:'5 mg/vial, 10 vials/kit',   price:50,  cas:'87616-84-0',    cat:'growth'  },
+  { catNo:'G610',  name:'GHRP-6',                     spec:'10 mg/vial, 10 vials/kit',  price:75,  cas:'87616-84-0',    cat:'growth'  },
+  { catNo:'SMO5',  name:'Sermorelin',                 spec:'5 mg/vial, 10 vials/kit',   price:65,  cas:'86168-78-7',    cat:'growth'  },
+  { catNo:'SMO10', name:'Sermorelin',                 spec:'10 mg/vial, 10 vials/kit',  price:100, cas:'86168-78-7',    cat:'growth'  },
+  { catNo:'HX2',   name:'Hexarelin Acetate',          spec:'2 mg/vial, 10 vials/kit',   price:50,  cas:'140703-51-1',   cat:'growth'  },
+  { catNo:'HX5',   name:'Hexarelin Acetate',          spec:'5 mg/vial, 10 vials/kit',   price:80,  cas:'140703-51-1',   cat:'growth'  },
+  { catNo:'TSM5',  name:'Tesamorelin',                spec:'5 mg/vial, 10 vials/kit',   price:100, cas:'218949-48-5',   cat:'growth'  },
+  { catNo:'TSM10', name:'Tesamorelin',                spec:'10 mg/vial, 10 vials/kit',  price:180, cas:'218949-48-5',   cat:'growth'  },
+  { catNo:'FM2',   name:'MGF',                        spec:'2 mg/vial, 10 vials/kit',   price:34,  cas:'12020-86-9',    cat:'growth'  },
+  { catNo:'FMP2',  name:'PEG MGF',                    spec:'2 mg/vial, 10 vials/kit',   price:75,  cas:'108174-48-7',   cat:'growth'  },
+  { catNo:'FN1',   name:'Follistatin',                spec:'1 mg/vial, 10 vials/kit',   price:230, cas:'80449-31-6',    cat:'growth'  },
+  { catNo:'GDF8',  name:'GDF-8',                      spec:'1 mg/vial, 10 vials/kit',   price:170, cas:'271597-12-7',   cat:'growth'  },
+  { catNo:'IG01',  name:'IGF-1 LR3',                  spec:'0.1 mg/vial, 10 vials/kit', price:40,  cas:'946870-92-4',   cat:'growth'  },
+  { catNo:'IG1',   name:'IGF-1 LR3',                  spec:'1 mg/vial, 10 vials/kit',   price:180, cas:'946870-92-4',   cat:'growth'  },
+  { catNo:'IGD',   name:'IGF-DES',                    spec:'0.1 mg/vial, 10 vials/kit', price:55,  cas:'67763-96-6',    cat:'growth'  },
+  { catNo:'G2K',   name:'HCG',                        spec:'2000 iu, 10 vials/kit',     price:40,  cas:'9002-61-3',     cat:'growth'  },
+  { catNo:'G5K',   name:'HCG',                        spec:'5000 iu, 10 vials/kit',     price:90,  cas:'9002-61-3',     cat:'growth'  },
+  { catNo:'G10K',  name:'HCG',                        spec:'10000 iu, 10 vials/kit',    price:130, cas:'9002-61-3',     cat:'growth'  },
+  { catNo:'G75',   name:'HMG',                        spec:'75 iu',                     price:55,  cas:'61489-71-2',    cat:'growth'  },
+  { catNo:'E3K',   name:'EPO',                        spec:'3000 iu',                   price:110, cas:'11096-26-7',    cat:'growth'  },
+  { catNo:'MS10',  name:'MOTs-c',                     spec:'10 mg/vial, 10 vials/kit',  price:60,  cas:'1627580-64-6',  cat:'growth'  },
+  { catNo:'MS40',  name:'MOTs-c',                     spec:'40 mg/vial, 10 vials/kit',  price:175, cas:'1627580-64-6',  cat:'growth'  },
+  /* ── Healing / Recovery ── */
+  { catNo:'BC5',   name:'BPC-157',                    spec:'5 mg/vial, 10 vials/kit',   price:50,  cas:'137525-51-0',   cat:'healing' },
+  { catNo:'BC10',  name:'BPC-157',                    spec:'10 mg/vial, 10 vials/kit',  price:85,  cas:'137525-51-0',   cat:'healing' },
+  { catNo:'BT5',   name:'TB-500',                     spec:'5 mg/vial, 10 vials/kit',   price:90,  cas:'77591-33-4',    cat:'healing' },
+  { catNo:'BT10',  name:'TB-500',                     spec:'10 mg/vial, 10 vials/kit',  price:120, cas:'77591-33-4',    cat:'healing' },
+  { catNo:'BB10',  name:'BPC 5mg + TB 5mg',           spec:'10 mg/vial, 10 vials/kit',  price:100, cas:'–',             cat:'healing' },
+  { catNo:'BB20',  name:'BPC 10mg + TB 10mg',         spec:'20 mg/vial, 10 vials/kit',  price:155, cas:'–',             cat:'healing' },
+  { catNo:'BBG70', name:'Glow (BPC+GHK-CU+TB500)',   spec:'70 mg/vial, 10 vials/kit',  price:160, cas:'–',             cat:'healing' },
+  { catNo:'KLOW80',name:'CU50+TB10+BC10+KPV10',       spec:'80 mg/vial, 10 vials/kit',  price:200, cas:'–',             cat:'healing' },
+  { catNo:'CU50',  name:'GHK-CU',                     spec:'50 mg/vial, 10 vials/kit',  price:45,  cas:'49557-75-7',    cat:'healing' },
+  { catNo:'CU100', name:'GHK-CU',                     spec:'100 mg/vial, 10 vials/kit', price:55,  cas:'49557-75-7',    cat:'healing' },
+  { catNo:'ET10',  name:'Epitalon',                   spec:'10 mg/vial, 10 vials/kit',  price:40,  cas:'307297-39-8',   cat:'healing' },
+  { catNo:'ET50',  name:'Epitalon',                   spec:'50 mg/vial, 10 vials/kit',  price:140, cas:'307297-39-8',   cat:'healing' },
+  { catNo:'RA10',  name:'Ara-290',                    spec:'10 mg/vial, 10 vials/kit',  price:80,  cas:'1208243-50-8',  cat:'healing' },
+  { catNo:'2S10',  name:'SS-31',                      spec:'10 mg/vial, 10 vials/kit',  price:90,  cas:'736992-21-5',   cat:'healing' },
+  { catNo:'2S50',  name:'SS-31',                      spec:'50 mg/vial, 10 vials/kit',  price:300, cas:'736992-21-5',   cat:'healing' },
+  { catNo:'CBL60', name:'Cerebrolysin',               spec:'60 mg × 6 vials',           price:65,  cas:'12656-61-0',    cat:'healing' },
+  { catNo:'F410',  name:'FOXO4',                      spec:'10 mg/vial, 10 vials/kit',  price:280, cas:'–',             cat:'healing' },
+  { catNo:'AE1',   name:'ACE-031',                    spec:'1 mg/vial, 10 vials/kit',   price:188, cas:'1621169-52-5',  cat:'healing' },
+  /* ── Other ── */
+  { catNo:'ML10',  name:'MT-2 (Melanotan 2 Acetate)', spec:'10 mg/vial, 10 vials/kit', price:35,  cas:'121062-08-6',   cat:'other'   },
+  { catNo:'322',   name:'SLU-PP-322',                 spec:'5 mg/vial, 10 vials/kit',   price:130, cas:'–',             cat:'other'   },
+  { catNo:'P41',   name:'PT-141',                     spec:'10 mg/vial, 10 vials/kit',  price:80,  cas:'189691-06-3',   cat:'other'   },
+  { catNo:'GND2',  name:'Gonadorelin',                spec:'2 mg/vial, 10 vials/kit',   price:32,  cas:'33515-09-2',    cat:'other'   },
+  { catNo:'DS2',   name:'DSIP',                       spec:'2 mg/vial, 10 vials/kit',   price:24,  cas:'62568-57-4',    cat:'other'   },
+  { catNo:'DS5',   name:'DSIP',                       spec:'5 mg/vial, 10 vials/kit',   price:65,  cas:'62568-57-4',    cat:'other'   },
+  { catNo:'DS15',  name:'DSIP',                       spec:'15 mg/vial, 10 vials/kit',  price:90,  cas:'62568-57-4',    cat:'other'   },
+  { catNo:'TRI2',  name:'Triptorelin',                spec:'2 mg/vial, 10 vials/kit',   price:43,  cas:'57773-63-4',    cat:'other'   },
+  { catNo:'SK5',   name:'Selank',                     spec:'5 mg/vial, 10 vials/kit',   price:55,  cas:'129954-34-3',   cat:'other'   },
+  { catNo:'SK10',  name:'Selank',                     spec:'10 mg/vial, 10 vials/kit',  price:75,  cas:'129954-34-3',   cat:'other'   },
+  { catNo:'OT2',   name:'Oxytocin',                   spec:'2 mg/vial, 10 vials/kit',   price:50,  cas:'50-56-6',       cat:'other'   },
+  { catNo:'AR50',  name:'AICAR',                      spec:'5 mg/vial, 10 vials/kit',   price:55,  cas:'2627-69-2',     cat:'other'   },
+  { catNo:'AP2',   name:'Adipotide',                  spec:'2 mg/vial, 10 vials/kit',   price:60,  cas:'859216-15-2',   cat:'other'   },
+  { catNo:'AP5',   name:'Adipotide',                  spec:'5 mg/vial, 10 vials/kit',   price:150, cas:'859216-15-2',   cat:'other'   },
+  { catNo:'XA5',   name:'Semax',                      spec:'5 mg/vial, 10 vials/kit',   price:50,  cas:'80714-61-0',    cat:'other'   },
+  { catNo:'XA10',  name:'Semax',                      spec:'10 mg/vial, 10 vials/kit',  price:80,  cas:'80714-61-0',    cat:'other'   },
+  { catNo:'TY10',  name:'Thymalin',                   spec:'10 mg/vial, 10 vials/kit',  price:55,  cas:'63958-90-7',    cat:'other'   },
+  { catNo:'TA2',   name:'Thymosin Alpha-1',           spec:'2 mg/vial, 10 vials/kit',   price:55,  cas:'62304-98-7',    cat:'other'   },
+  { catNo:'TA5',   name:'Thymosin Alpha-1',           spec:'5 mg/vial, 10 vials/kit',   price:95,  cas:'62304-98-7',    cat:'other'   },
+  { catNo:'TA10',  name:'Thymosin Alpha-1',           spec:'10 mg/vial, 10 vials/kit',  price:140, cas:'62304-98-7',    cat:'other'   },
+  { catNo:'375',   name:'LL-37',                      spec:'5 mg/vial, 10 vials/kit',   price:100, cas:'154947-66-7',   cat:'other'   },
+  { catNo:'MT1',   name:'MT1',                        spec:'10 mg/vial, 10 vials/kit',  price:80,  cas:'–',             cat:'other'   },
+  { catNo:'MT10',  name:'Melatonin',                  spec:'10 mg/vial, 10 vials/kit',  price:59.5,cas:'73-31-4',       cat:'other'   },
+  { catNo:'DR5',   name:'Dermorphin',                 spec:'5 mg/vial, 10 vials/kit',   price:70,  cas:'77614-16-5',    cat:'other'   },
+  { catNo:'GTT',   name:'Glutathione',                spec:'1500 mg/vial, 10 vials/kit',price:90,  cas:'70-18-8',       cat:'other'   },
+  { catNo:'ISU',   name:'Insulin',                    spec:'1 unit/vial, 10 vials/kit', price:57,  cas:'12584-58-6',    cat:'other'   },
+  { catNo:'XT100', name:'Botulinum Toxin',            spec:'100 iu/vial, 1 vial/kit',   price:130, cas:'93384-43-1',    cat:'other'   },
+  { catNo:'NJ100', name:'NAD+',                       spec:'100 mg/vial, 10 vials/kit', price:50,  cas:'53-84-9',       cat:'other'   },
+  { catNo:'NJ500', name:'NAD+',                       spec:'500 mg/vial, 10 vials/kit', price:90,  cas:'53-84-9',       cat:'other'   },
+  { catNo:'5AM',   name:'5-Amino-1MQ',               spec:'5 mg/vial',                 price:75,  cas:'42464-96-0',    cat:'other'   },
+  { catNo:'KPV5',  name:'KPV (Lys-Pro-Val)',          spec:'5 mg/vial, 10 vials/kit',   price:80,  cas:'–',             cat:'other'   },
+  { catNo:'KPV10', name:'KPV (Lys-Pro-Val)',          spec:'10 ml/vial, 10 vials/kit',  price:90,  cas:'–',             cat:'other'   },
+  { catNo:'VIP5',  name:'VIP5',                       spec:'5 mg/vial, 10 vials/kit',   price:80,  cas:'–',             cat:'other'   },
+  { catNo:'VIP10', name:'VIP10',                      spec:'10 ml/vial, 10 vials/kit',  price:130, cas:'–',             cat:'other'   },
+  { catNo:'NP810', name:'Snap-8',                     spec:'10 mg/vial, 10 vials/kit',  price:70,  cas:'868844-74-0',   cat:'other'   },
+  { catNo:'KS5',   name:'KissPeptin-10',              spec:'5 mg/vial, 10 vials/kit',   price:60,  cas:'374675-21-5',   cat:'other'   },
+  { catNo:'KS10',  name:'KissPeptin-10',              spec:'10 mg/vial, 10 vials/kit',  price:100, cas:'374675-21-5',   cat:'other'   },
+  { catNo:'PI5',   name:'Pinealon',                   spec:'5 mg/vial, 10 vials/kit',   price:60,  cas:'–',             cat:'other'   },
+  { catNo:'PI10',  name:'Pinealon',                   spec:'10 mg/vial, 10 vials/kit',  price:80,  cas:'–',             cat:'other'   },
+  { catNo:'P20',   name:'Pinealon',                   spec:'20 mg/vial, 10 vials/kit',  price:100, cas:'–',             cat:'other'   },
+  { catNo:'PNC5',  name:'PNC 27 (5mg)',               spec:'5 mg/vial, 10 vials/kit',   price:100, cas:'–',             cat:'other'   },
+  { catNo:'PNC10', name:'PNC 27 (10mg)',              spec:'10 mg/vial, 10 vials/kit',  price:135, cas:'–',             cat:'other'   },
+  { catNo:'LC216', name:'Lipo-C with Vitamins B12',  spec:'10 ml/vial, 10 vials/kit',  price:90,  cas:'–',             cat:'other'   },
+  { catNo:'LC120', name:'LC120',                      spec:'10 ml/vial, 10 vials/kit',  price:80,  cas:'–',             cat:'other'   },
+  { catNo:'LC600', name:'L-Carnitine',               spec:'10 ml/vial, 10 vials/kit',  price:100, cas:'–',             cat:'other'   },
+  { catNo:'PRO20', name:'Alprostadil',               spec:'20 mcg × 5 vials',          price:120, cas:'–',             cat:'other'   },
+  { catNo:'HA5',   name:'Hyaluronic Acid',            spec:'5 mg/vial',                 price:35,  cas:'9004-61-9',     cat:'other'   },
+  { catNo:'WA3',   name:'Bacteriostatic Water (PBS)', spec:'3 ml/vial, 10 vials/kit',   price:5,   cas:'–',             cat:'other'   },
+  { catNo:'WA10',  name:'Bacteriostatic Water (PBS)', spec:'10 ml/vial, 10 vials/kit',  price:10,  cas:'–',             cat:'other'   },
+  { catNo:'BA3',   name:'Benzyl Alcohol 0.9%',        spec:'3 ml/vial, 10 vials/kit',   price:5,   cas:'–',             cat:'other'   },
+  { catNo:'BA10',  name:'Benzyl Alcohol 0.9%',        spec:'10 ml/vial, 10 vials/kit',  price:10,  cas:'–',             cat:'other'   },
+  { catNo:'AA3',   name:'Acetic Acid Water 0.6%',     spec:'3 ml/vial, 10 vials/kit',   price:5,   cas:'–',             cat:'other'   },
+  { catNo:'AA10',  name:'Acetic Acid Water 0.6%',     spec:'10 ml/vial, 10 vials/kit',  price:5,   cas:'–',             cat:'other'   },
+];
+
+/* ── REVIEWS stored in localStorage ── */
+function getReviews(catNo) {
+  try { return JSON.parse(localStorage.getItem('reviews_' + catNo) || '[]'); } catch { return []; }
+}
+function getApprovedReviews(catNo) {
+  return getReviews(catNo).filter(r => r.approved);
+}
+function getAvgRating(catNo) {
+  const revs = getApprovedReviews(catNo);
+  if (!revs.length) return null;
+  return revs.reduce((s,r) => s + r.stars, 0) / revs.length;
+}
+function starsHTML(avg, count) {
+  if (avg === null) return '';
+  const full = Math.round(avg);
+  let s = '';
+  for (let i = 1; i <= 5; i++) s += i <= full ? '★' : '☆';
+  return `<div class="card-stars"><span class="stars-display">${s}</span><span class="stars-count">(${count})</span></div>`;
+}
+
+function goToDetail(catNo) {
+  window.location.href = `hmpeptide-product-detail.html?product=${catNo}`;
+}
+
+const PAGE_SIZE = 16;
+let currentPage = 1;
+let currentFilter = 'all';
+let filteredProducts = [...ALL_PRODUCTS];
+let currentProduct = null;
+
+function setFilter(cat, btn) {
+  currentFilter = cat;
+  currentPage = 1;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filteredProducts = cat === 'all' ? [...ALL_PRODUCTS] : ALL_PRODUCTS.filter(p => p.cat === cat);
+  render();
+}
+
+function render() {
+  const grid = document.getElementById('productGrid');
+  const info = document.getElementById('resultsInfo');
+  const total = filteredProducts.length;
+  const pages = Math.ceil(total / PAGE_SIZE);
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const slice = filteredProducts.slice(start, start + PAGE_SIZE);
+
+  info.innerHTML = `Showing <strong>${start+1}–${Math.min(start+PAGE_SIZE, total)}</strong> of <strong>${total}</strong> products`;
+
+  grid.innerHTML = slice.map(p => {
+    const revs = getReviews(p.catNo);
+    const avg = getAvgRating(p.catNo);
+    const stars = starsHTML(avg, revs.length);
+    return `
+    <div class="product-card" onclick="goToDetail('${p.catNo}')" data-img="${p.catNo}">
+      <div class="card-img">
+        <span class="card-label-tag">${p.catNo}</span>
+        <img src="images/${p.catNo}.png" alt="${p.name}" style="height:180px;object-fit:contain;position:relative;z-index:1;"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+        <div style="display:none;width:100px;height:120px;align-items:center;justify-content:center;font-size:36px;opacity:0.2;">🧪</div>
+      </div>
+      <div class="card-body">
+        <div class="card-catno">${p.catNo}</div>
+        <div class="card-name">${p.name}</div>
+        <div class="card-spec">${p.spec}</div>
+        <div class="purity-tag">
+          <span class="ptag purity">99% Purity</span>
+          <span class="ptag research">Research Only</span>
+        </div>
+        ${stars}
+        <div class="card-footer">
+          <div class="card-price"><sup>$</sup>${p.price % 1 === 0 ? p.price : p.price.toFixed(1)}</div>
+          <button class="card-btn" onclick="event.stopPropagation(); goToDetail('${p.catNo}')">Details</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  renderPagination(pages);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderPagination(totalPages) {
+  const wrap = document.getElementById('paginationWrap');
+  if (totalPages <= 1) { wrap.innerHTML = ''; return; }
+
+  let html = '';
+  html += `<button class="page-btn prev-next" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 4L6 8l4 4"/></svg>
+    Prev
+  </button>`;
+  html += pageBtn(1);
+  if (currentPage > 4) html += `<span class="page-label">…</span>`;
+  for (let i = Math.max(2, currentPage-2); i <= Math.min(totalPages-1, currentPage+2); i++) {
+    html += pageBtn(i);
+  }
+  if (currentPage < totalPages - 3) html += `<span class="page-label">…</span>`;
+  if (totalPages > 1) html += pageBtn(totalPages);
+  html += `<button class="page-btn prev-next" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>
+    Next
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>
+  </button>`;
+  wrap.innerHTML = html;
+}
+
+function pageBtn(n) {
+  return `<button class="page-btn ${n===currentPage?'active':''}" onclick="goPage(${n})">${n}</button>`;
+}
+
+function goPage(n) {
+  const total = Math.ceil(filteredProducts.length / PAGE_SIZE);
+  if (n < 1 || n > total) return;
+  currentPage = n;
+  render();
+}
+
+function openModal(catNo) {
+  const p = ALL_PRODUCTS.find(x => x.catNo === catNo);
+  if (!p) return;
+  currentProduct = p;
+  document.getElementById('modalName').textContent = p.name;
+  document.getElementById('modalCatNo').textContent = `Cat. No. ${p.catNo}`;
+  document.getElementById('modalPrice').textContent = `$${p.price % 1 === 0 ? p.price : p.price.toFixed(1)}`;
+  document.getElementById('modalSpec').textContent = p.spec;
+  document.getElementById('modalCas').textContent = p.cas || '–';
+  document.getElementById('modalImg').src = `images/${p.catNo}.png`;
+  document.getElementById('modalImg').alt = p.name;
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  currentProduct = null;
+}
+
+function closeModalOnOverlay(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+function inquireProduct() {
+  if (!currentProduct) return;
+  const msg = encodeURIComponent(
+    `Hi, I'm interested in: ${currentProduct.name} (${currentProduct.catNo}) – ${currentProduct.spec} @ $${currentProduct.price}\nPlease send me more info.`
+  );
+  window.open(`https://wa.me/85293157951?text=${msg}`, '_blank');
+}
+
+// FIXED: Mobile navigation toggle
+function toggleNav() {
+  const nav = document.getElementById('mainNav');
+  const hamburger = document.getElementById('hamburger');
+  const overlay = document.getElementById('menuOverlay');
+  
+  nav.classList.toggle('open');
+  hamburger.classList.toggle('open');
+  overlay.classList.toggle('active');
+  
+  // Prevent body scroll when menu is open
+  if (nav.classList.contains('open')) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = '';
+  }
+}
+
+// Close menu when window is resized above mobile breakpoint
+window.addEventListener('resize', function() {
+  if (window.innerWidth > 820) {
+    const nav = document.getElementById('mainNav');
+    const hamburger = document.getElementById('hamburger');
+    const overlay = document.getElementById('menuOverlay');
+    if (nav.classList.contains('open')) {
+      nav.classList.remove('open');
+      hamburger.classList.remove('open');
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  }
+});
+
+// Close menu when a link is clicked
+document.querySelectorAll('#mainNav a').forEach(link => {
+  link.addEventListener('click', () => {
+    const nav = document.getElementById('mainNav');
+    const hamburger = document.getElementById('hamburger');
+    const overlay = document.getElementById('menuOverlay');
+    if (nav.classList.contains('open')) {
+      nav.classList.remove('open');
+      hamburger.classList.remove('open');
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  });
+});
+
+// Newsletter subscription
+document.getElementById('subscribeBtn')?.addEventListener('click', function() {
+  const email = document.getElementById('newsEmail').value;
+  if (email && email.includes('@')) {
+    alert('Thank you! You will receive the price list soon.');
+    document.getElementById('newsEmail').value = '';
+  } else {
+    alert('Please enter a valid email address.');
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+render();
+</script>
+</body>
+</html>

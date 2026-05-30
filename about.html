@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HM Peptide - About Us</title>
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style1.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        /* ── Reset & Variables ─────────────────────────────────── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --teal: #00b4a6;
+            --teal-dark: #008f84;
+            --teal-light: #e0f7f5;
+            --navy: #1a2b3c;
+            --soft: #6b7280;
+            --border: #dde3e0;
+            --white: #ffffff;
+            --bg: #f9f9f9;
+            --dark: #1a2b3c;
+            --serif: 'Cormorant Garamond', serif;
+            --sans: 'DM Sans', sans-serif;
+            --section-gap: 90px;
+        }
+
+        body {
+            font-family: var(--sans);
+            font-size: 15px;
+            color: var(--dark);
+            background: var(--white);
+            line-height: 1.75;
+            overflow-x: hidden;
+        }
+
+        /* Topbar Styles */
+        .topbar {
+            background: var(--navy);
+            color: rgba(255,255,255,0.85);
+            text-align: center;
+            font-size: 12.5px;
+            letter-spacing: 0.03em;
+            padding: 10px 20px;
+            font-family: var(--sans);
+        }
+        .topbar span { color: var(--teal); font-weight: 600; }
+
+        /* Header Styles */
+        header {
+            background: var(--white);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .header-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            height: 72px;
+            position: relative;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--sans);
+            font-weight: 700;
+            font-size: 22px;
+            color: var(--navy);
+            cursor: pointer;
+            z-index: 1001;
+        }
+        .logo-text em { color: var(--teal); font-style: normal; }
+        
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        nav a {
+            font-family: var(--sans);
+            font-size: 14px;
+            font-weight: 500;
+            color: #4a5568;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.22s ease;
+            text-decoration: none;
+        }
+        nav a:hover, nav a.active {
+            color: var(--teal);
+            background: var(--teal-light);
+        }
+        .nav-contact {
+            background: var(--teal) !important;
+            color: white !important;
+            border-radius: 8px;
+            font-weight: 600 !important;
+        }
+        .nav-contact:hover { background: var(--teal-dark) !important; }
+        
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 8px;
+            z-index: 1001;
+            background: transparent;
+            border: none;
+        }
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 2.5px;
+            background: var(--navy);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        /* Mobile Navigation - Fixed */
+        @media (max-width: 820px) {
+            .header-inner { padding: 0 20px; }
+            .hamburger { display: flex; }
+            
+            nav {
+                display: flex;
+                flex-direction: column;
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 280px;
+                height: 100vh;
+                background: var(--white);
+                padding: 80px 24px 30px;
+                box-shadow: -5px 0 30px rgba(0,0,0,0.15);
+                gap: 8px;
+                z-index: 1000;
+                transition: right 0.3s ease;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+            nav.open {
+                right: 0;
+            }
+            nav a {
+                width: 100%;
+                text-align: left;
+                padding: 14px 20px;
+                border-radius: 12px;
+                font-size: 16px;
+            }
+            nav a.active::after {
+                display: none;
+            }
+            nav a.nav-contact {
+                margin-top: 10px;
+                text-align: center;
+            }
+            
+            .menu-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 999;
+                cursor: pointer;
+            }
+            .menu-overlay.active {
+                display: block;
+            }
+            
+            .hamburger.open span:nth-child(1) {
+                transform: rotate(45deg) translate(6px, 6px);
+            }
+            .hamburger.open span:nth-child(2) {
+                opacity: 0;
+            }
+            .hamburger.open span:nth-child(3) {
+                transform: rotate(-45deg) translate(6px, -6px);
+            }
+            
+            /* Prevent body scroll when menu is open */
+            body.menu-open {
+                overflow: hidden;
+            }
+        }
+
+        /* ── Utility ───────────────────────────────────────────── */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .section-label {
+            display: block;
+            font-family: var(--sans);
+            font-size: 11px;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--teal);
+            margin-bottom: 10px;
+        }
+
+        .section-title {
+            font-family: var(--serif);
+            font-size: clamp(28px, 4vw, 42px);
+            font-weight: 400;
+            color: var(--dark);
+            line-height: 1.2;
+        }
+
+        .divider {
+            display: block;
+            width: 42px;
+            height: 2px;
+            background: var(--teal);
+            margin: 18px auto 0;
+        }
+
+        .divider.left { margin-left: 0; }
+
+        p { color: #4a5568; font-size: 14.5px; line-height: 1.8; }
+
+        /* ── Hero / Company Profile ────────────────────────────── */
+        .profile-hero {
+            background: var(--bg);
+            padding: var(--section-gap) 0 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(58,155,142,.07) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .profile-hero .section-title { margin-bottom: 6px; }
+
+        .profile-hero .intro-text {
+            max-width: 780px;
+            margin: 36px auto 0;
+            text-align: left;
+            display: grid;
+            gap: 18px;
+            padding: 0 20px;
+        }
+
+        /* ── Mission ───────────────────────────────────────────── */
+        .mission {
+            padding: var(--section-gap) 0;
+        }
+
+        .mission-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 56px;
+            align-items: center;
+        }
+
+        .mission-img {
+            position: relative;
+            border-radius: 4px;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+            background: #c8dcd9;
+        }
+
+        .mission-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform .6s ease;
+        }
+
+        .mission-img:hover img { transform: scale(1.04); }
+
+        .mission-img::after {
+            content: '';
+            position: absolute;
+            left: -10px; bottom: -10px;
+            width: 60%; height: 60%;
+            border: 3px solid var(--teal);
+            border-radius: 4px;
+            z-index: -1;
+        }
+
+        .mission-content { display: grid; gap: 20px; }
+        .mission-content .section-title { margin-bottom: 4px; }
+
+        /* ── Commitment ────────────────────────────────────────── */
+        .commitment {
+            background: #1a2b3c;
+            padding: var(--section-gap) 0;
+            color: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .commitment::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 55% 70% at 100% 50%, rgba(58,155,142,.15) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .commitment-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 56px;
+            align-items: center;
+        }
+
+        .commitment-content .section-title { color: var(--white); }
+        .commitment-content p { color: #b0bab8; }
+
+        .commitment-list {
+            list-style: none;
+            margin: 20px 0;
+            display: grid;
+            gap: 10px;
+        }
+
+        .commitment-list li {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            color: #b0bab8;
+            font-size: 14px;
+        }
+
+        .commitment-list li i {
+            color: var(--teal);
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+
+        .commitment-img {
+            border-radius: 4px;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+            background: #2a3a38;
+        }
+
+        .commitment-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            opacity: .85;
+            transition: opacity .4s;
+        }
+
+        .commitment-img:hover img { opacity: 1; }
+
+        /* ── Why Choose ────────────────────────────────────────── */
+        .why-choose {
+            padding: var(--section-gap) 0;
+            text-align: center;
+        }
+
+        .why-choose .lead {
+            max-width: 680px;
+            margin: 28px auto 52px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .pillars {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 28px;
+            margin-bottom: 56px;
+            padding: 0 20px;
+        }
+
+        .pillar-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 32px 22px 28px;
+            text-align: center;
+            transition: border-color .3s, box-shadow .3s, transform .3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pillar-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--teal);
+            transform: scaleX(0);
+            transition: transform .35s ease;
+        }
+
+        .pillar-card:hover::before { transform: scaleX(1); }
+
+        .pillar-card:hover {
+            border-color: var(--teal);
+            box-shadow: 0 8px 32px rgba(58,155,142,.12);
+            transform: translateY(-4px);
+        }
+
+        .pillar-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--teal-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+        }
+
+        .pillar-icon i {
+            font-size: 22px;
+            color: var(--teal);
+        }
+
+        .pillar-card h3 {
+            font-family: var(--serif);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .pillar-card p {
+            font-size: 13.5px;
+            line-height: 1.7;
+        }
+
+        /* feature bullets */
+        .features {
+            max-width: 780px;
+            margin: 0 auto;
+            text-align: left;
+            display: grid;
+            gap: 16px;
+            padding: 0 20px;
+        }
+
+        .feature-item {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+
+        .feature-item i {
+            color: var(--teal);
+            margin-top: 3px;
+            flex-shrink: 0;
+            font-size: 15px;
+        }
+
+        .feature-item p { margin: 0; }
+        .feature-item strong { color: var(--dark); }
+
+        /* ========== SIDEBAR ICONS - ALWAYS VISIBLE ========== */
+        .side-contact {
+            position: fixed;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            z-index: 200;
+            gap: 2px;
+        }
+        .side-btn, .back-to-top {
+            width: 48px;
+            height: 48px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.22s ease;
+            color: #4a5568;
+            text-decoration: none;
+        }
+        .side-btn:hover, .back-to-top:hover { background: var(--teal); color: white; }
+        .back-to-top { background: #1a2b3c; color: white; border-radius: 0; }
+
+        @media (max-width: 1024px) {
+            .side-contact { right: 8px; }
+            .side-btn, .back-to-top { width: 42px; height: 42px; font-size: 18px; }
+        }
+        @media (max-width: 768px) {
+            .side-contact { right: 5px; }
+            .side-btn, .back-to-top { width: 38px; height: 38px; font-size: 16px; }
+        }
+        @media (max-width: 480px) {
+            .side-contact { right: 5px; }
+            .side-btn, .back-to-top { width: 35px; height: 35px; font-size: 14px; }
+        }
+
+        /* ========== PAYMENT METHODS SECTION ========== */
+        .payment-section {
+            max-width: 1280px;
+            margin: 60px auto 60px;
+            padding: 30px 32px;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            text-align: center;
+        }
+        .payment-section h4 {
+            font-family: var(--sans);
+            font-size: 1.1rem;
+            color: var(--navy);
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+        .payment-icons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 35px;
+            align-items: center;
+        }
+        .payment-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .payment-icon i {
+            font-size: 48px;
+            color: var(--navy);
+            transition: transform 0.2s;
+        }
+        .payment-icon span {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4a5568;
+            letter-spacing: 0.5px;
+        }
+        .payment-icon:hover i {
+            transform: translateY(-3px);
+            color: var(--teal);
+        }
+        .fa-bitcoin { color: #F7931A; }
+        .fa-university { color: #2c6e9e; }
+        .fa-paypal { color: #003087; }
+        .fa-square { color: #00c4b4; }
+        .fa-building-columns { color: #4a5568; }
+
+        /* CTA SECTION */
+        .cta-section {
+            background: var(--white);
+            text-align: center;
+            padding: 60px 20px 80px;
+            border-top: 1px solid #eee;
+            margin-top: 0;
+        }
+        .cta-section h2 {
+            font-family: var(--sans);
+            font-size: clamp(1.2rem, 5vw, 1.9rem);
+            font-weight: 700;
+            color: var(--navy);
+            max-width: 500px;
+            margin: 0 auto 10px;
+            line-height: 1.3;
+            padding: 0 10px;
+        }
+        .cta-section p {
+            color: #888;
+            font-size: clamp(0.8rem, 3vw, 0.9rem);
+            margin-bottom: 30px;
+            padding: 0 15px;
+        }
+        .email-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            max-width: 480px;
+            width: 90%;
+            margin: 0 auto;
+            border: 1px solid #aaa;
+            border-radius: 48px;
+            overflow: hidden;
+            background: white;
+        }
+        .email-row input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 0.9rem;
+            padding: 14px 20px;
+            font-family: var(--sans);
+            color: #4a5568;
+            background: transparent;
+            min-width: 0;
+        }
+        .email-row input::placeholder {
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+        .arrow-btn {
+            background: var(--teal);
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            color: white;
+            padding: 0 24px;
+            transition: background 0.2s;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .arrow-btn:hover {
+            background: var(--teal-dark);
+        }
+
+        /* FOOTER */
+        .footer {
+            background: #1a1a1a;
+            color: #ccc;
+            padding: 50px 32px 30px;
+            margin-top: 0;
+        }
+        .footer-cols {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+        }
+        .footer-col h4 { color: white; font-size: 0.8rem; letter-spacing: 0.14em; margin-bottom: 18px; }
+        .footer-col p, .footer-col a { font-size: 0.82rem; color: #aaa; line-height: 2; text-decoration: none; display: block; }
+        .footer-col a:hover { color: var(--teal); }
+        .footer-col img { width: 150px; height: auto; object-fit: contain; }
+        .footer-bottom {
+            text-align: center;
+            border-top: 1px solid #333;
+            padding-top: 24px;
+            margin-top: 40px;
+            font-size: 0.7rem;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 0 20px; }
+            .mission-grid, .commitment-grid { grid-template-columns: 1fr; gap: 40px; }
+            .mission-img { order: -1; }
+            .pillars { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+            .profile-hero { padding: 60px 0 60px; }
+            .pillar-card { padding: 24px 16px 20px; }
+            .pillar-card h3 { font-size: 16px; }
+            .pillar-card p { font-size: 12px; }
+            .payment-section { padding: 30px 20px; margin: 40px 20px; }
+            .payment-icons { gap: 20px; }
+            .payment-icon i { font-size: 36px; }
+            .footer { padding: 40px 24px 24px; }
+            .footer-cols { grid-template-columns: 1fr; gap: 24px; text-align: center; }
+            .cta-section { padding: 40px 16px 60px; }
+            .email-row { width: 95%; max-width: 400px; }
+        }
+
+        @media (max-width: 480px) {
+            .pillars { grid-template-columns: 1fr; gap: 16px; }
+            .profile-hero .intro-text { text-align: center; }
+            .mission-content, .commitment-content { text-align: center; }
+            .divider.left { margin: 18px auto 0; }
+            .commitment-list li { text-align: left; }
+            .features { text-align: left; }
+            .feature-item { text-align: left; }
+            .payment-icons { gap: 16px; }
+            .payment-icon i { font-size: 32px; }
+            .payment-icon span { font-size: 10px; }
+            .cta-section h2 { font-size: 1.2rem; }
+            .email-row input { padding: 10px 14px; font-size: 0.8rem; }
+            .arrow-btn { padding: 0 14px; font-size: 1.1rem; min-height: 42px; }
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(28px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-up { animation: fadeUp .7s ease both; }
+        .fade-up.d1 { animation-delay: .1s; }
+        .fade-up.d2 { animation-delay: .22s; }
+        .fade-up.d3 { animation-delay: .34s; }
+        .fade-up.d4 { animation-delay: .46s; }
+    </style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+    Factory-direct pricing · 99%+ purity · <span>Free shipping over $500</span> · WhatsApp: +852 9315 7951
+</div>
+
+<!-- HEADER -->
+<header>
+    <div class="header-inner">
+        <div class="logo" onclick="window.location.href='index.html'">
+            <img src="assets/logo.png" alt="HM Peptide" style="height: 40px; width: auto;">
+            <div class="logo-text"><span style="color: #00b4a6;">HM</span><em style="color: #1a2b3c;">peptide</em></div>
+        </div>
+        <nav id="mainNav">
+            <a href="index.html">Home</a>
+            <a href="contact.html">Contact us</a>
+            <a href="about.html" class="active">About</a>
+            <a href="hmpeptide-sales.html">Sale</a>
+            <a href="reviews.html">Reviews</a>
+            <a href="product.html">Products</a>
+            <a href="https://wa.me/85293157951" target="_blank" class="nav-contact">WhatsApp Us</a>
+        </nav>
+        <div class="hamburger" id="hamburger" onclick="toggleNav()">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+    <div class="menu-overlay" id="menuOverlay" onclick="toggleNav()"></div>
+</header>
+
+<!-- COMPANY PROFILE SECTION -->
+<section class="profile-hero">
+    <div class="container">
+        <span class="section-label fade-up">Who We Are</span>
+        <h1 class="section-title fade-up d1">Company Profile</h1>
+        <span class="divider fade-up d2"></span>
+
+        <div class="intro-text fade-up d3">
+            <p><strong>HM Peptide</strong> is a trusted global supplier specializing in the development, production, and distribution of high-quality peptides for the research, pharmaceutical, and healthcare industries. With extensive expertise and a commitment to innovation, we have established long-term collaborations with clients and partners worldwide, providing reliable, cost-effective solutions that meet the evolving needs of science and medicine.</p>
+            <p>Our advanced production facilities operate under strict quality management systems, ensuring that every product undergoes comprehensive testing with detailed documentation to verify purity, potency, and compliance with international regulatory standards. By integrating efficient manufacturing processes, optimized supply chains, and factory-direct pricing, we consistently deliver exceptional value without compromising quality or safety.</p>
+            <p>Beyond supplying products, HM Peptide is dedicated to building enduring partnerships based on integrity, transparency, and responsive customer service. Our global logistics network guarantees secure and timely delivery, enabling researchers and companies to achieve their goals faster and more efficiently. We take pride in being more than a supplier — we are a trusted partner in advancing scientific discovery and improving healthcare outcomes worldwide.</p>
+        </div>
+    </div>
+</section>
+
+<!-- OUR MISSION SECTION -->
+<section class="mission">
+    <div class="container">
+        <div class="mission-grid">
+            <div class="mission-img">
+                <img src="./assets/our-mission.png" alt="Our Mission">
+            </div>
+            <div class="mission-content">
+                <span class="section-label">Purpose</span>
+                <h2 class="section-title">Our Mission</h2>
+                <span class="divider left"></span>
+                <p>At HM Peptide, our mission is to support global scientific research and healthcare innovation by providing premium-quality peptides at competitive prices.</p>
+                <p>We strive to be more than a supplier — we aim to be a trusted partner, delivering reliable products, transparent processes, and professional support.</p>
+                <p>By combining advanced production capabilities, strict quality control, and efficient global logistics, we help our clients achieve their goals while building partnerships based on integrity and long-term value.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- OUR COMMITMENT SECTION -->
+<section class="commitment">
+    <div class="container">
+        <div class="commitment-grid">
+            <div class="commitment-content">
+                <span class="section-label" style="color:var(--teal);">Our Promise</span>
+                <h2 class="section-title">Our Commitment</h2>
+                <span class="divider left" style="margin-bottom:22px;"></span>
+                <p>We go beyond supplying peptides — we deliver trust, reliability, and lasting value to every client we serve.</p>
+                <ul class="commitment-list">
+                    <li><i class="fa-solid fa-circle-check"></i> Upholding the highest standards of quality and regulatory compliance.</li>
+                    <li><i class="fa-solid fa-circle-check"></i> Providing fair, transparent, and factory-direct pricing.</li>
+                    <li><i class="fa-solid fa-circle-check"></i> Ensuring safe, efficient, and on-time global delivery.</li>
+                    <li><i class="fa-solid fa-circle-check"></i> Building long-term partnerships through integrity and responsive support.</li>
+                </ul>
+                <p>Your success is our priority. HM Peptide will always be your dependable partner in the peptide supply chain.</p>
+            </div>
+            <div class="commitment-img">
+                <img src="./assets/woman-microscope.jpg" alt="Research laboratory">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- WHY CHOOSE HM PEPTIDE SECTION -->
+<section class="why-choose">
+    <div class="container">
+        <span class="section-label">Advantages</span>
+        <h2 class="section-title">Why Choose HM Peptide?</h2>
+        <span class="divider"></span>
+        <p class="lead">We combine robust production capabilities, rigorous quality control, and efficient global logistics to meet diverse customer needs.</p>
+
+        <div class="pillars">
+            <div class="pillar-card">
+                <div class="pillar-icon"><i class="fa-solid fa-flask-vial"></i></div>
+                <h3>Quality</h3>
+                <p>Every batch is rigorously tested with detailed reports, ensuring purity, potency, and full compliance with international standards.</p>
+            </div>
+            <div class="pillar-card">
+                <div class="pillar-icon"><i class="fa-solid fa-tags"></i></div>
+                <h3>Price</h3>
+                <p>We deliver cost-effective solutions without sacrificing product quality — straight from the factory to you.</p>
+            </div>
+            <div class="pillar-card">
+                <div class="pillar-icon"><i class="fa-solid fa-globe"></i></div>
+                <h3>Delivery</h3>
+                <p>Our global logistics network ensures safe, on-time delivery with full regulatory compliance and real-time tracking.</p>
+            </div>
+            <div class="pillar-card">
+                <div class="pillar-icon"><i class="fa-solid fa-headset"></i></div>
+                <h3>Service</h3>
+                <p>Our team provides professional, responsive support to foster long-term partnerships and ensure your satisfaction.</p>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature-item">
+                <i class="fa-solid fa-star"></i>
+                <p><strong>High-Quality Peptides:</strong> Every batch is rigorously tested with detailed reports, ensuring purity, potency, and full compliance with international standards.</p>
+            </div>
+            <div class="feature-item">
+                <i class="fa-solid fa-star"></i>
+                <p><strong>Competitive Factory Pricing:</strong> We deliver cost-effective solutions without sacrificing product quality.</p>
+            </div>
+            <div class="feature-item">
+                <i class="fa-solid fa-star"></i>
+                <p><strong>Reliable Global Delivery:</strong> Our global logistics network ensures safe, on-time delivery with full regulatory compliance.</p>
+            </div>
+            <div class="feature-item">
+                <i class="fa-solid fa-star"></i>
+                <p><strong>Customer-Focused Service:</strong> Our team provides professional, responsive support to foster long-term partnerships.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PAYMENT METHODS SECTION -->
+<div class="payment-section">
+    <h4>We Accept</h4>
+    <div class="payment-icons">
+        <div class="payment-icon"><i class="fab fa-bitcoin"></i><span>BITCOIN</span></div>
+        <div class="payment-icon"><i class="fas fa-university"></i><span>ZELLE</span></div>
+        <div class="payment-icon"><i class="fab fa-paypal"></i><span>PAYPAL</span></div>
+        <div class="payment-icon"><i class="fab fa-square"></i><span>CASHAPP</span></div>
+        <div class="payment-icon"><i class="fas fa-building-columns"></i><span>BANK TRANSFER</span></div>
+    </div>
+</div>
+
+<!-- CTA SECTION -->
+<section class="cta-section">
+    <h2>Add whatsapp to get November price lists</h2>
+    <p>Janoshik test report are available now!</p>
+    <div class="email-row">
+        <input type="email" placeholder="Enter your e-mail address" id="newsEmail" />
+        <button class="arrow-btn" id="subscribeBtn">→</button>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="footer-cols">
+        <div class="footer-col">
+            <h4>CONTACT US</h4>
+            <p>HM PEPTIDE</p>
+            <p>Whatsapp: +852 9315 7951</p>
+            <p>Email: hmcamlpeptides@gmail.com</p>
+        </div>
+        <div class="footer-col">
+            <h4>FAQ &amp; HELP</h4>
+           <a href="privacy.html" >Privacy Policy</a>
+            <a href="#">PAYMENT METHODS</a>
+            <a href="#">FAQ</a>
+        </div>
+        <div class="footer-col">
+            <h4>OVERVIEW</h4>
+            <a href="#">PAYMENT METHODS</a>
+           <a href="privacy.html" >Privacy Policy</a>
+            <a href="#">Location &amp; Working Hours</a>
+        </div>
+        <div class="footer-col">
+            <h4>CONTACT</h4>
+            <img src="assets/RQR.png" width="100" height="100" alt="Payment methods">
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>Copyright @ 2023 . All rights reserved lamps</p>
+        <p>关于我们 | 经典案例 | 新闻动态 | 服务理由 | 咨询团队 | 联系我们</p>
+        <p>Copyright © 2026 . All rights reserved.</p>
+        <p>河北旺盛卫生用品有限公司</p>
+    </div>
+</footer>
+
+<!-- Floating Sidebar with Icons - ALWAYS VISIBLE -->
+<div class="side-contact">
+    <a href="tel:+85293157951" class="side-btn" data-tooltip="Call Us">
+        <i class="fas fa-phone-alt"></i>
+    </a>
+    <a href="mailto:hmcamlpeptides@gmail.com" class="side-btn" data-tooltip="Email Us">
+        <i class="fas fa-envelope"></i>
+    </a>
+    <a href="https://wa.link/rjc3kb" class="side-btn" data-tooltip="WhatsApp" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+    <div class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" data-tooltip="Back to Top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+</div>
+
+<script>
+    // ======================= VISITOR TRACKING - UPDATED FOR CORRECT SCHEMA =======================
+    (async function() {
+        const SUPABASE_URL = 'https://jhuwtkhztehhhifetqgb.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_RRDIuWw0eo26aKCHZGRKyQ_BFotKqyV';
+        
+        console.log('🔵 [About Page Tracker] Starting visitor tracking...');
+        
+        try {
+            // Create Supabase client
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            
+            // Get or create unique visitor ID
+            let visitorId = localStorage.getItem('hm_visitor_id');
+            if (!visitorId) {
+                visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substring(2);
+                localStorage.setItem('hm_visitor_id', visitorId);
+                console.log('🆕 [About Page] New visitor created:', visitorId);
+            } else {
+                console.log('🔁 [About Page] Returning visitor:', visitorId);
+            }
+            
+            // Get IP address
+            let ip = 'Unknown';
+            try {
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
+                ip = ipData.ip;
+                console.log('🌐 [About Page] Got IP:', ip);
+            } catch(e) {
+                console.log('⚠️ [About Page] Could not get IP (using fallback)');
+            }
+            
+            // Get current page
+            const currentPage = window.location.pathname.split('/').pop() || 'about.html';
+            
+            // Prepare visitor data - ONLY columns that exist in your table (no 'referrer')
+            const visitorData = {
+                id: visitorId,
+                ip_address: ip,
+                page: currentPage,
+                user_agent: navigator.userAgent.substring(0, 300),
+                last_seen: new Date().toISOString(),
+                status: 'online'
+            };
+            
+            console.log('📝 [About Page] Saving visitor data:', visitorData);
+            
+            // Try to upsert visitor
+            const { data, error } = await supabase
+                .from('visitors')
+                .upsert(visitorData, { onConflict: 'id' });
+            
+            if (error) {
+                console.error('❌ [About Page] ERROR writing to Supabase:', error);
+                console.error('❌ [About Page] Error details:', error.message);
+            } else {
+                console.log('✅ [About Page] SUCCESS! Visitor saved to database!');
+                console.log('✅ [About Page] You should now see this visitor in the admin dashboard!');
+            }
+            
+            // Set up heartbeat every 30 seconds to keep visitor online
+            setInterval(async () => {
+                try {
+                    const newPage = window.location.pathname.split('/').pop() || 'about.html';
+                    const { error: updateError } = await supabase
+                        .from('visitors')
+                        .update({ 
+                            last_seen: new Date().toISOString(),
+                            page: newPage,
+                            status: 'online'
+                        })
+                        .eq('id', visitorId);
+                    
+                    if (updateError) {
+                        console.log('⚠️ [About Page] Heartbeat error:', updateError.message);
+                    } else {
+                        console.log('💓 [About Page] Heartbeat sent for page:', newPage);
+                    }
+                } catch(e) {
+                    console.log('⚠️ [About Page] Heartbeat failed:', e);
+                }
+            }, 30000);
+            
+        } catch(e) {
+            console.error('💥 [About Page] Fatal error:', e);
+        }
+    })();
+    
+    // ======================= NAVIGATION FUNCTIONS =======================
+    function toggleNav() {
+        const nav = document.getElementById('mainNav');
+        const hamburger = document.getElementById('hamburger');
+        const overlay = document.getElementById('menuOverlay');
+        const body = document.body;
+        
+        if (!nav) return;
+        
+        nav.classList.toggle('open');
+        if (hamburger) hamburger.classList.toggle('open');
+        if (overlay) overlay.classList.toggle('active');
+        
+        // Prevent body scroll when menu is open
+        if (nav.classList.contains('open')) {
+            body.style.overflow = 'hidden';
+        } else {
+            body.style.overflow = '';
+        }
+    }
+
+    // Close menu when window is resized above mobile breakpoint
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 820) {
+            const nav = document.getElementById('mainNav');
+            const hamburger = document.getElementById('hamburger');
+            const overlay = document.getElementById('menuOverlay');
+            const body = document.body;
+            
+            if (nav && nav.classList.contains('open')) {
+                nav.classList.remove('open');
+                if (hamburger) hamburger.classList.remove('open');
+                if (overlay) overlay.classList.remove('active');
+                body.style.overflow = '';
+            }
+        }
+    });
+
+    // Close menu when overlay is clicked (already handled by onclick on overlay)
+    // Also close menu when a link is clicked
+    document.querySelectorAll('#mainNav a').forEach(link => {
+        link.addEventListener('click', () => {
+            const nav = document.getElementById('mainNav');
+            const hamburger = document.getElementById('hamburger');
+            const overlay = document.getElementById('menuOverlay');
+            const body = document.body;
+            
+            if (nav && nav.classList.contains('open')) {
+                nav.classList.remove('open');
+                if (hamburger) hamburger.classList.remove('open');
+                if (overlay) overlay.classList.remove('active');
+                body.style.overflow = '';
+            }
+        });
+    });
+
+    // Set active navigation based on current page
+    (function setActiveNav() {
+        const navLinks = document.querySelectorAll('#mainNav a');
+        if (!navLinks.length) return;
+        
+        let currentPage = window.location.pathname.split('/').pop();
+        if (currentPage === "" || currentPage === "/" || currentPage === null) {
+            currentPage = "index.html";
+        }
+        
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            let href = link.getAttribute('href');
+            if (href && href.includes('wa.me')) return;
+            if (href && href.includes('https://')) return;
+            if (href === currentPage) {
+                link.classList.add('active');
+            }
+            if (currentPage === 'index.html' && (href === 'index.html' || href === '/' || href === '')) {
+                link.classList.add('active');
+            }
+        });
+    })();
+
+    // Newsletter subscription
+    document.getElementById('subscribeBtn')?.addEventListener('click', function() {
+        const email = document.getElementById('newsEmail').value;
+        if (email && email.includes('@')) {
+            alert('Thank you! You will receive the price list soon.');
+            document.getElementById('newsEmail').value = '';
+        } else {
+            alert('Please enter a valid email address.');
+        }
+    });
+</script>
+
+</body>
+</html>
